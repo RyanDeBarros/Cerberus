@@ -61,7 +61,7 @@
              <x>0</x>
              <y>0</y>
              <width>120</width>
-             <height>442</height>
+             <height>475</height>
             </rect>
            </property>
            <attribute name="label">
@@ -92,7 +92,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>102</width>
-                 <height>364</height>
+                 <height>397</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -150,29 +150,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>33</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionChange_Case"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
   </widget>
   <action name="actionChange_Case">
    <property name="text">

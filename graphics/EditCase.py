@@ -1,7 +1,7 @@
 from enum import Enum
 from io import StringIO
 
-from graphics import AppContext
+from graphics import AppContext, Symbols
 
 
 class EditCaseOption(Enum):
@@ -37,11 +37,24 @@ def set_capitalize_case():
 
 
 def set_sentence_case():
-	pass  # TODO
+	text = AppContext.selected_text()
+	out = StringIO()
+	on_first = True
+	for c in text:
+		if c in Symbols.sentence_enders:
+			on_first = True
+			out.write(c)
+		elif on_first:
+			out.write(c.upper())
+			if not c.isspace():
+				on_first = False
+		else:
+			out.write(c.lower())
+	AppContext.insert_text(out.getvalue())
 
 
 def set_title_case():
-	pass  # TODO
+	pass  # TODO like capitalize case but not for words like 'a', 'an', 'of', 'the', etc. Set in Symbols and configure in settings
 
 
 def get_edit_case_action(option: EditCaseOption):
