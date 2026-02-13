@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from enum import Enum
 from io import StringIO
 
@@ -10,6 +11,19 @@ class EditCaseOption(Enum):
 	Capitalize = 3
 	Sentence = 4
 	Title = 5
+
+
+@contextmanager
+def restore_cursor():
+	cursor = AppContext.text_cursor()
+	position = cursor.position()
+	anchor = cursor.anchor()
+	yield cursor
+	AppContext.text_area().setFocus()
+	cursor = AppContext.text_cursor()
+	cursor.setPosition(anchor)
+	cursor.setPosition(position, cursor.MoveMode.KeepAnchor)
+	AppContext.set_text_cursor(cursor)
 
 
 def set_upper_case():
@@ -79,15 +93,22 @@ def set_title_case():
 	AppContext.insert_text(out.getvalue())
 
 
+def get_wrapped_edit_case_action(action):
+	def f():
+		with restore_cursor():
+			action()
+	return f
+
+
 def get_edit_case_action(option: EditCaseOption):
 	match option:
 		case EditCaseOption.Upper:
-			return set_upper_case
+			return get_wrapped_edit_case_action(set_upper_case)
 		case EditCaseOption.Lower:
-			return set_lower_case
+			return get_wrapped_edit_case_action(set_lower_case)
 		case EditCaseOption.Capitalize:
-			return set_capitalize_case
+			return get_wrapped_edit_case_action(set_capitalize_case)
 		case EditCaseOption.Sentence:
-			return set_sentence_case
+			return get_wrapped_edit_case_action(set_sentence_case)
 		case EditCaseOption.Title:
-			return set_title_case
+			return get_wrapped_edit_case_action(set_title_case)

@@ -1,3 +1,4 @@
+from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QApplication
 
 from graphics import MainWindow
@@ -22,6 +23,9 @@ def all_text():
 
 def text_cursor():
 	return text_area().textCursor()
+
+def set_text_cursor(cursor: QTextCursor):
+	return text_area().setTextCursor(cursor)
 
 def selected_text():
 	return text_cursor().selectedText().replace('\u2029', '\n')
