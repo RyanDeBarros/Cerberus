@@ -40,7 +40,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="filePage">
            <property name="geometry">
@@ -48,7 +48,7 @@
              <x>0</x>
              <y>0</y>
              <width>120</width>
-             <height>442</height>
+             <height>415</height>
             </rect>
            </property>
            <attribute name="label">
@@ -61,7 +61,7 @@
              <x>0</x>
              <y>0</y>
              <width>120</width>
-             <height>475</height>
+             <height>415</height>
             </rect>
            </property>
            <attribute name="label">
@@ -71,15 +71,15 @@
             <item>
              <widget class="QToolBox" name="toolBox_2">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="editBasicPage">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>358</width>
-                 <height>364</height>
+                 <width>102</width>
+                 <height>337</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -92,7 +92,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>102</width>
-                 <height>397</height>
+                 <height>337</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -134,11 +134,34 @@
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </widget>
              </widget>
             </item>
            </layout>
+          </widget>
+          <widget class="QWidget" name="scriptingPage">
+           <attribute name="label">
+            <string>Scripting</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="settingsPage">
+           <attribute name="label">
+            <string>Settings</string>
+           </attribute>
           </widget>
          </widget>
         </item>

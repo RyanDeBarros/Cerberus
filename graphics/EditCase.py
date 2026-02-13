@@ -25,7 +25,7 @@ def set_capitalize_case():
 	out = StringIO()
 	on_first = True
 	for c in text:
-		if c.isspace():  # TODO or other separator characters like '=', ':', etc. from Symbols
+		if c in Symbols.word_separators:
 			on_first = True
 			out.write(c)
 		elif on_first:
@@ -49,12 +49,34 @@ def set_sentence_case():
 			if not c.isspace():
 				on_first = False
 		else:
-			out.write(c.lower())
+			out.write(c.lower())  # TODO don't lowercase if whole word is 'i'
 	AppContext.insert_text(out.getvalue())
 
 
 def set_title_case():
-	pass  # TODO like capitalize case but not for words like 'a', 'an', 'of', 'the', etc. Set in Symbols and configure in settings
+	text = AppContext.selected_text()
+	out = StringIO()
+	i = 0
+	# TODO first word in a sentence must always be capitalized
+	while i < len(text):
+		if text[i].lower() in Symbols.lowercase_alphabet:
+			j = i + 1
+			while j < len(text) and text[j].lower() in Symbols.lowercase_alphabet:
+				j += 1
+			word = text[i:j].lower()
+			if word in Symbols.lowercase_nontitle_words:
+				if word == 'i':
+					out.write('I')
+				else:
+					out.write(word)
+			else:
+				out.write(word[0].upper())
+				out.write(word[1:].lower())
+			i = j
+		else:
+			out.write(text[i])
+			i += 1
+	AppContext.insert_text(out.getvalue())
 
 
 def get_edit_case_action(option: EditCaseOption):
