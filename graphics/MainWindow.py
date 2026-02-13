@@ -1,21 +1,7 @@
-from PySide6.QtCore import QObject, QEvent, QTimer
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMainWindow, QScrollArea
 
 from ui import Ui_MainWindow
-
-
-class ConstantFocus(QObject):
-	def eventFilter(self, obj, event):
-		if event.type() == QEvent.Type.FocusOut:
-			cursor = obj.textCursor()
-
-			def restore():
-				obj.setFocus()
-				obj.setTextCursor(cursor)
-
-			QTimer.singleShot(10, restore)
-
-		return False
 
 
 class MainWindow(QMainWindow):
@@ -24,9 +10,10 @@ class MainWindow(QMainWindow):
 
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
+		self.ui.textArea.setFocus()
 
-		self.textAreaFocuser = ConstantFocus()
-		# self.ui.textArea.installEventFilter(self.textAreaFocuser)
+		for scroll in self.findChildren(QScrollArea):
+			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
 		from graphics import ToolButton
 
