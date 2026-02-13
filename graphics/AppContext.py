@@ -16,3 +16,15 @@ def main_window():
 
 def text_area():
 	return MAIN_WINDOW.ui.textArea
+
+def all_text():
+	return text_area().toPlainText()
+
+def text_cursor():
+	return text_area().textCursor()
+
+def selected_text():
+	return text_cursor().selectedText().replace('\u2029', '\n')
+
+def insert_text(text: str):
+	text_cursor().insertText(text)

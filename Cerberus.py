@@ -1,4 +1,4 @@
-from graphics import run_app
+from graphics import AppContext
 
 if __name__ == "__main__":
-	run_app()
+	AppContext.run_app()
