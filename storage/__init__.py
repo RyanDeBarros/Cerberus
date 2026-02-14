@@ -1,2 +1,2 @@
 from .PersistentData import PERSISTENT_DATA
-from .Symbols import Symbols
+from .Symbols import SYMBOLS

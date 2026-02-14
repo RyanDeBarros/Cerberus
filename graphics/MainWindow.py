@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", PERSISTENT_DATA.file_dialog_dir, "Text Files (*.txt, *.md, *.log);; All Files (*)")
 		if filenames:
 			PERSISTENT_DATA.file_dialog_dir = os.path.dirname(filenames[0])
-			PERSISTENT_DATA.save()
+			PERSISTENT_DATA.store()
 			for file in filenames:
 				self.open_file(file)
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-import toml
+from .StorageKeeper import StorageKeeper
 
 PERSISTENT_DATA_PATH = Path('data/persistent.toml')
 
@@ -10,15 +10,13 @@ PERSISTENT_DATA_PATH = Path('data/persistent.toml')
 class PersistentData:
 	file_dialog_dir: str = ""
 
-	def load(self):
-		if PERSISTENT_DATA_PATH.exists():
-			with open(PERSISTENT_DATA_PATH, 'r') as f:
-				self.__dict__.update(toml.load(f))
+	def __init__(self):
+		self.storage = StorageKeeper(self, [
+			"file_dialog_dir",
+		], Path('data/persistent.toml'))
 
-	def save(self):
-		PERSISTENT_DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
-		with open(PERSISTENT_DATA_PATH, 'w') as f:
-			toml.dump(self.__dict__, f)
+	def store(self):
+		self.storage.store()
 
 
 PERSISTENT_DATA = PersistentData()

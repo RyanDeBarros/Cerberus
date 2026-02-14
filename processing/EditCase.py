@@ -3,7 +3,7 @@ from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
-from storage import Symbols
+from storage import SYMBOLS
 
 
 class EditCaseOption(Enum):
@@ -40,7 +40,7 @@ def set_capitalize_case():
 	out = StringIO()
 	on_first = True
 	for c in text:
-		if c in Symbols.word_separators:
+		if c in SYMBOLS.word_separators:
 			on_first = True
 			out.write(c)
 		elif on_first:
@@ -56,7 +56,7 @@ def set_sentence_case():
 	out = StringIO()
 	on_first = True
 	for c in text:
-		if c in Symbols.sentence_enders:
+		if c in SYMBOLS.sentence_enders:
 			on_first = True
 			out.write(c)
 		elif on_first:
@@ -74,12 +74,12 @@ def set_title_case():
 	i = 0
 	# TODO first word in a sentence must always be capitalized
 	while i < len(text):
-		if text[i].lower() in Symbols.lowercase_alphabet:
+		if text[i].lower() in SYMBOLS.lowercase_alphabet:
 			j = i + 1
-			while j < len(text) and text[j].lower() in Symbols.lowercase_alphabet:
+			while j < len(text) and text[j].lower() in SYMBOLS.lowercase_alphabet:
 				j += 1
 			word = text[i:j].lower()
-			if word in Symbols.lowercase_nontitle_words:
+			if word in SYMBOLS.lowercase_nontitle_words:
 				if word == 'i':
 					out.write('I')
 				else:
