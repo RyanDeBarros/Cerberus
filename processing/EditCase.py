@@ -2,7 +2,8 @@ from contextlib import contextmanager
 from enum import Enum
 from io import StringIO
 
-from graphics import AppContext, Symbols
+from graphics import AppContext
+from storage import Symbols
 
 
 class EditCaseOption(Enum):

@@ -1,9 +1,11 @@
+import os.path
 from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QFileDialog
 
+from storage import PERSISTENT_DATA
 from ui import Ui_MainWindow
 
 
@@ -20,7 +22,7 @@ class MainWindow(QMainWindow):
 
 		from graphics import ToolButton
 
-		from graphics import get_edit_case_action, EditCaseOption
+		from processing import get_edit_case_action, EditCaseOption
 		self.editCaseUpper = ToolButton(self.ui.editCaseUpper, get_edit_case_action(EditCaseOption.Upper))
 		self.editCaseLower = ToolButton(self.ui.editCaseLower, get_edit_case_action(EditCaseOption.Lower))
 		self.editCaseCapitalize = ToolButton(self.ui.editCaseCapitalize, get_edit_case_action(EditCaseOption.Capitalize))
@@ -31,9 +33,10 @@ class MainWindow(QMainWindow):
 		open_shortcut.activated.connect(self.open_file_prompt)
 
 	def open_file_prompt(self):
-		# TODO store last directory opened
-		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", "", "Text Files (*.txt, *.md, *.log);; All Files (*)")
+		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", PERSISTENT_DATA.file_dialog_dir, "Text Files (*.txt, *.md, *.log);; All Files (*)")
 		if filenames:
+			PERSISTENT_DATA.file_dialog_dir = os.path.dirname(filenames[0])
+			PERSISTENT_DATA.save()
 			for file in filenames:
 				self.open_file(file)
 
