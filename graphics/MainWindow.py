@@ -20,14 +20,12 @@ class MainWindow(QMainWindow):
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
-		from graphics import ToolButton
-
 		from processing import get_edit_case_action, EditCaseOption
-		self.editCaseUpper = ToolButton(self.ui.editCaseUpper, get_edit_case_action(EditCaseOption.Upper))
-		self.editCaseLower = ToolButton(self.ui.editCaseLower, get_edit_case_action(EditCaseOption.Lower))
-		self.editCaseCapitalize = ToolButton(self.ui.editCaseCapitalize, get_edit_case_action(EditCaseOption.Capitalize))
-		self.editCaseSentence = ToolButton(self.ui.editCaseSentence, get_edit_case_action(EditCaseOption.Sentence))
-		self.editCaseTitle = ToolButton(self.ui.editCaseTitle, get_edit_case_action(EditCaseOption.Title))
+		self.ui.editCaseUpper.clicked.connect(get_edit_case_action(EditCaseOption.Upper))
+		self.ui.editCaseLower.clicked.connect(get_edit_case_action(EditCaseOption.Lower))
+		self.ui.editCaseCapitalize.clicked.connect(get_edit_case_action(EditCaseOption.Capitalize))
+		self.ui.editCaseSentence.clicked.connect(get_edit_case_action(EditCaseOption.Sentence))
+		self.ui.editCaseTitle.clicked.connect(get_edit_case_action(EditCaseOption.Title))
 
 		open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
 		open_shortcut.activated.connect(self.open_file_prompt)
