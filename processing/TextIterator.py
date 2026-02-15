@@ -71,9 +71,10 @@ class TextSelection:
 
 
 class CharacterCase(Enum):
-	IGNORE = 1,
-	UPPER = 2,
-	LOWER = 3
+	IGNORE = 0,
+	UPPER = 1,
+	LOWER = 2,
+	CAPITALIZE = 3
 
 
 class TextIterator:
@@ -97,17 +98,26 @@ class TextIterator:
 		self.index += 1
 
 	def write_char(self, out: StringIO, case: CharacterCase = CharacterCase.IGNORE) -> None:
-		if case == CharacterCase.LOWER:
-			out.write(self.char().lower())
-		elif case == CharacterCase.UPPER:
-			out.write(self.char().upper())
-		else:
-			out.write(self.char())
+		match case:
+			case CharacterCase.IGNORE:
+				out.write(self.char())
+			case CharacterCase.UPPER:
+				out.write(self.char().upper())
+			case CharacterCase.LOWER:
+				out.write(self.char().lower())
+			case CharacterCase.CAPITALIZE:
+				out.write(self.char().upper())
 		self.to_next_char()
 
 	def write_chars(self, out: StringIO, num: int, case: CharacterCase = CharacterCase.IGNORE) -> None:
-		for _ in range(num):
-			self.write_char(out, case)
+		if case != CharacterCase.CAPITALIZE:
+			for _ in range(num):
+				self.write_char(out, case)
+		else:
+			if num > 0:
+				self.write_char(out, CharacterCase.UPPER)
+			for _ in range(num - 1):
+				self.write_char(out, CharacterCase.LOWER)
 
 	# **aBc** => 2
 	def left_subword_len(self) -> int:
@@ -202,6 +212,9 @@ class TextIterator:
 		return self.is_word_char() and (self.full_index() == 0 or not self.is_word_char(FullIndex(self.full_index() - 1)))
 
 	def is_first_word_of_sentence(self) -> bool:
+		if not self.valid():
+			return False
+
 		base = self.index
 		self.index -= SubIndex(self.left_word_len())
 		prev_word_exists = False

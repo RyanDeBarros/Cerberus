@@ -54,7 +54,7 @@ def set_sentence_case():
 	out = StringIO()
 	it = TextIterator()
 	early_exit = EarlyExitAtChar(it, ''.join(SYMBOLS.sentence_enders))
-	on_first_word = it.valid() and it.is_first_word_of_sentence()
+	on_first_word = it.is_first_word_of_sentence()
 	while it.valid():
 		if it.char() in SYMBOLS.sentence_enders:
 			it.write_char(out)
@@ -84,27 +84,22 @@ def set_title_case():
 		it.write_chars(out, it.right_subword_len(), CharacterCase.LOWER)
 		on_first_word = False
 	else:
-		on_first_word = it.valid() and it.is_first_word_of_sentence()
+		on_first_word = it.is_first_word_of_sentence()
 
 	while it.valid():
 		if it.char() in SYMBOLS.sentence_enders:
 			it.write_char(out)
 			on_first_word = True
 		elif it.is_word_char():
+			case = CharacterCase.LOWER
 			if on_first_word:
 				on_first_word = False
-				capitalize = True
+				case = CharacterCase.CAPITALIZE
 			else:
 				word = it.word()
-				capitalize = word.lower() not in SYMBOLS.lowercase_nontitle_words or word.lower() == 'i'
-
-			if capitalize:
-				leftover = it.right_subword_len() - 1
-				it.write_char(out, CharacterCase.UPPER)
-				if leftover > 0:
-					it.write_chars(out, leftover, CharacterCase.LOWER)
-			else:
-				it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
+				if word.lower() not in SYMBOLS.lowercase_nontitle_words or word.lower() == 'i':
+					case = CharacterCase.CAPITALIZE
+			it.write_chars(out, it.right_subword_len(), case)
 		else:
 			it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
 
