@@ -3,7 +3,8 @@ from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
-from processing.TextIterator import TextIterator  # TODO why is it importing module and not class?
+from processing.EarlyExit import EarlyExitAtChar
+from processing.TextIterator import TextIterator  # TODO why is it importing TextIterator module and not class?
 from storage import SYMBOLS
 
 
@@ -51,19 +52,27 @@ def set_capitalize_case():
 
 
 def set_sentence_case():
-	text = AppContext.selected_text()
 	out = StringIO()
-	on_first = True
-	for c in text:
-		if c in SYMBOLS.sentence_enders:
-			on_first = True
-			out.write(c)
-		elif on_first:
-			out.write(c.upper())
-			if not c.isspace():
-				on_first = False
-		else:
-			out.write(c.lower())  # TODO don't lowercase if whole word is 'i'
+	it = TextIterator()
+	early_exit = EarlyExitAtChar(it, ''.join(SYMBOLS.sentence_enders))
+	on_first_word = it.valid() and it.is_first_word_of_sentence()
+	while it.valid():
+		if it.char() in SYMBOLS.sentence_enders:
+			it.write_char(out)
+			on_first_word = True
+			continue
+
+		if it.is_word_char():
+			if on_first_word:
+				on_first_word = False
+				if it.is_first_letter_of_word():
+					it.write_char_upper(out)
+					continue
+			elif it.word() == 'i':
+				it.write_char_upper(out)
+				continue
+
+		it.write_up_to_next_subword(out, early_exit)
 	AppContext.insert_text(out.getvalue())
 
 

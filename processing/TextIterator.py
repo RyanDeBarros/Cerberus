@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from io import StringIO
 
 from graphics import AppContext
@@ -28,6 +29,12 @@ class SubIndex(int):
 		if isinstance(other, FullIndex):
 			raise TypeError()
 		return SubIndex(super().__sub__(other))
+
+
+class EarlyExit(ABC):
+	@abstractmethod
+	def __call__(self) -> bool:
+		return False
 
 
 class TextSelection:
@@ -133,20 +140,20 @@ class TextIterator:
 	def is_first_letter_of_subword(self) -> bool:
 		return self.is_word_char() and (self.index == 0 or not self.is_word_char(SubIndex(self.index - 1)))
 
-	def distance_to_next_subword(self) -> int:
+	def distance_to_next_subword(self, early_exit: EarlyExit | None = None) -> int:
 		base = self.index
 		self.index += self.right_subword_len()
-		while self.valid() and self.is_word_char():
+		while self.valid() and not self.is_word_char() and not early_exit():
 			self.index += 1
 		distance = self.index - base
 		self.index = base
 		return distance
 
-	def to_next_subword(self) -> None:
-		self.index += self.distance_to_next_subword()
+	def to_next_subword(self, early_exit: EarlyExit | None = None) -> None:
+		self.index += self.distance_to_next_subword(early_exit)
 
-	def write_up_to_next_subword(self, out: StringIO) -> None:
-		d = self.distance_to_next_subword()
+	def write_up_to_next_subword(self, out: StringIO, early_exit: EarlyExit | None = None) -> None:
+		d = self.distance_to_next_subword(early_exit)
 		while d > 0:
 			out.write(self.char())
 			self.to_next_char()
@@ -188,3 +195,18 @@ class TextIterator:
 
 	def is_first_letter_of_word(self) -> bool:
 		return self.is_word_char() and (self.full_index() == 0 or not self.is_word_char(FullIndex(self.full_index() - 1)))
+
+	def is_first_word_of_sentence(self) -> bool:
+		base = self.index
+		self.index -= SubIndex(self.left_word_len())
+		prev_word_exists = False
+		while self.full_index() >= 0:
+			if self.char().lower() in SYMBOLS.sentence_enders:
+				break
+			elif self.is_word_char():
+				prev_word_exists = True
+				break
+			else:
+				self.index -= 1
+		self.index = base
+		return not prev_word_exists
