@@ -41,10 +41,10 @@ def set_capitalize_case():
 	it = TextIterator()
 	while it.valid():
 		if it.is_word_char():
-			if it.is_first_letter_of_subword():  # TODO use is_first_letter_of_word instead
+			if it.is_first_letter_of_word():
 				it.write_char_upper(out)
 			else:
-				it.write_up_to_next_word(out)
+				it.write_up_to_next_subword(out)
 		else:
 			it.write_char(out)
 	AppContext.insert_text(out.getvalue())
