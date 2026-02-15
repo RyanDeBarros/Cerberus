@@ -3,6 +3,7 @@ from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
+from processing.TextIterator import TextIterator  # TODO why is it importing module and not class?
 from storage import SYMBOLS
 
 
@@ -36,18 +37,16 @@ def set_lower_case():
 
 
 def set_capitalize_case():
-	text = AppContext.selected_text()
 	out = StringIO()
-	on_first = True
-	for c in text:
-		if c in SYMBOLS.word_separators:
-			on_first = True
-			out.write(c)
-		elif on_first:
-			out.write(c.upper())
-			on_first = False
+	it = TextIterator()
+	while it.valid():
+		if it.is_word_char():
+			if it.is_first_letter_of_subword():  # TODO use is_first_letter_of_word instead
+				it.write_char_upper(out)
+			else:
+				it.write_up_to_next_word(out)
 		else:
-			out.write(c.lower())
+			it.write_char(out)
 	AppContext.insert_text(out.getvalue())
 
 
