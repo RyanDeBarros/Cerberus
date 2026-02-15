@@ -3,8 +3,7 @@ from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
-from processing.EarlyExit import EarlyExitAtChar
-from processing.TextIterator import TextIterator  # TODO why is it importing TextIterator module and not class?
+from processing import TextIterator, EarlyExitAtChar, CharacterCase
 from storage import SYMBOLS
 
 
@@ -43,7 +42,7 @@ def set_capitalize_case():
 	while it.valid():
 		if it.is_word_char():
 			if it.is_first_letter_of_word():
-				it.write_char_upper(out)
+				it.write_char(out, CharacterCase.UPPER)
 			else:
 				it.write_up_to_next_subword(out)
 		else:
@@ -66,39 +65,49 @@ def set_sentence_case():
 			if on_first_word:
 				on_first_word = False
 				if it.is_first_letter_of_word():
-					it.write_char_upper(out)
+					it.write_char(out, CharacterCase.UPPER)
 					continue
-			elif it.word() == 'i':
-				it.write_char_upper(out)
+			elif it.word().lower() == 'i':
+				it.write_char(out, CharacterCase.UPPER)
 				continue
 
-		it.write_up_to_next_subword(out, early_exit)
+		it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
 	AppContext.insert_text(out.getvalue())
 
 
 def set_title_case():
-	text = AppContext.selected_text()
 	out = StringIO()
-	i = 0
-	# TODO first word in a sentence must always be capitalized
-	while i < len(text):
-		if text[i].lower() in SYMBOLS.lowercase_alphabet:
-			j = i + 1
-			while j < len(text) and text[j].lower() in SYMBOLS.lowercase_alphabet:
-				j += 1
-			word = text[i:j].lower()
-			if word in SYMBOLS.lowercase_nontitle_words:
-				if word == 'i':
-					out.write('I')
-				else:
-					out.write(word)
+	it = TextIterator()
+	early_exit = EarlyExitAtChar(it, ''.join(SYMBOLS.sentence_enders))
+
+	if it.valid() and not it.is_first_letter_of_word():
+		it.write_chars(out, it.right_subword_len(), CharacterCase.LOWER)
+		on_first_word = False
+	else:
+		on_first_word = it.valid() and it.is_first_word_of_sentence()
+
+	while it.valid():
+		if it.char() in SYMBOLS.sentence_enders:
+			it.write_char(out)
+			on_first_word = True
+		elif it.is_word_char():
+			if on_first_word:
+				on_first_word = False
+				capitalize = True
 			else:
-				out.write(word[0].upper())
-				out.write(word[1:].lower())
-			i = j
+				word = it.word()
+				capitalize = word.lower() not in SYMBOLS.lowercase_nontitle_words or word.lower() == 'i'
+
+			if capitalize:
+				leftover = it.right_subword_len() - 1
+				it.write_char(out, CharacterCase.UPPER)
+				if leftover > 0:
+					it.write_chars(out, leftover, CharacterCase.LOWER)
+			else:
+				it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
 		else:
-			out.write(text[i])
-			i += 1
+			it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
+
 	AppContext.insert_text(out.getvalue())
 
 

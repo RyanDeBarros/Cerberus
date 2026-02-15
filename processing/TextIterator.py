@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
 from storage import SYMBOLS
 
-
-# TODO why aren't these overloads working?
 
 class FullIndex(int):
 	def __add__(self, other):
@@ -71,6 +70,12 @@ class TextSelection:
 		return abs(self.position - self.anchor)
 
 
+class CharacterCase(Enum):
+	IGNORE = 1,
+	UPPER = 2,
+	LOWER = 3
+
+
 class TextIterator:
 	def __init__(self, index=SubIndex(0)):
 		self.text = TextSelection(AppContext.all_text(), AppContext.text_cursor().position(), AppContext.text_cursor().anchor())
@@ -91,17 +96,18 @@ class TextIterator:
 	def to_next_char(self) -> None:
 		self.index += 1
 
-	def write_char(self, out: StringIO) -> None:
-		out.write(self.char())
+	def write_char(self, out: StringIO, case: CharacterCase = CharacterCase.IGNORE) -> None:
+		if case == CharacterCase.LOWER:
+			out.write(self.char().lower())
+		elif case == CharacterCase.UPPER:
+			out.write(self.char().upper())
+		else:
+			out.write(self.char())
 		self.to_next_char()
 
-	def write_char_upper(self, out: StringIO) -> None:
-		out.write(self.char().upper())
-		self.to_next_char()
-
-	def write_char_lower(self, out: StringIO) -> None:
-		out.write(self.char().lower())
-		self.to_next_char()
+	def write_chars(self, out: StringIO, num: int, case: CharacterCase = CharacterCase.IGNORE) -> None:
+		for _ in range(num):
+			self.write_char(out, case)
 
 	# **aBc** => 2
 	def left_subword_len(self) -> int:
@@ -152,11 +158,10 @@ class TextIterator:
 	def to_next_subword(self, early_exit: EarlyExit | None = None) -> None:
 		self.index += self.distance_to_next_subword(early_exit)
 
-	def write_up_to_next_subword(self, out: StringIO, early_exit: EarlyExit | None = None) -> None:
+	def write_up_to_next_subword(self, out: StringIO, early_exit: EarlyExit | None = None, case: CharacterCase = CharacterCase.IGNORE) -> None:
 		d = self.distance_to_next_subword(early_exit)
 		while d > 0:
-			out.write(self.char())
-			self.to_next_char()
+			self.write_char(out, case)
 			d -= 1
 
 	# **aBc** => 2
@@ -201,7 +206,7 @@ class TextIterator:
 		self.index -= SubIndex(self.left_word_len())
 		prev_word_exists = False
 		while self.full_index() >= 0:
-			if self.char().lower() in SYMBOLS.sentence_enders:
+			if self.char() in SYMBOLS.sentence_enders:
 				break
 			elif self.is_word_char():
 				prev_word_exists = True

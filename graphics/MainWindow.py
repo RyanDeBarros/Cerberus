@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
 
 		open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
 		open_shortcut.activated.connect(self.open_file_prompt)
-		# TODO ctrl+Z is removes focus from text area
+		# TODO ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def open_file_prompt(self):
 		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", PERSISTENT_DATA.file_dialog_dir, "Text Files (*.txt *.md *.log);; All Files (*)")

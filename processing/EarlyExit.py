@@ -1,7 +1,6 @@
 from typing import override
 
-from processing import TextIterator
-from processing.TextIterator import EarlyExit
+from processing import TextIterator, EarlyExit
 
 
 class EarlyExitAtChar(EarlyExit):
