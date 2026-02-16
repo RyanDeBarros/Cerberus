@@ -1,5 +1,5 @@
 from PySide6.QtGui import QTextCursor
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QPlainTextEdit
 
 from graphics import MainWindow
 
@@ -14,29 +14,29 @@ def run_app():
 	app.exec()
 
 
-def main_window():
+def main_window() -> MainWindow:
 	return MAIN_WINDOW
 
 
-def text_area():
-	return MAIN_WINDOW.ui.textArea
+def text_area() -> QPlainTextEdit:
+	return MAIN_WINDOW.get_tab().text_area
 
 
-def all_text():
+def all_text() -> str:
 	return text_area().toPlainText()
 
 
-def text_cursor():
+def text_cursor() -> QTextCursor:
 	return text_area().textCursor()
 
 
-def set_text_cursor(cursor: QTextCursor):
-	return text_area().setTextCursor(cursor)
+def set_text_cursor(cursor: QTextCursor) -> None:
+	text_area().setTextCursor(cursor)
 
 
-def selected_text():
+def selected_text() -> str:
 	return text_cursor().selectedText().replace('\u2029', '\n')
 
 
-def insert_text(text: str):
+def insert_text(text: str) -> None:
 	text_cursor().insertText(text)

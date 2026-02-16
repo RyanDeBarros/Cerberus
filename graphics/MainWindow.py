@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QFileDialog
 
+from graphics import FileTab
 from storage import PERSISTENT_DATA
 from ui import Ui_MainWindow
 
@@ -15,7 +16,6 @@ class MainWindow(QMainWindow):
 
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
-		self.ui.textArea.setFocus()
 
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -26,7 +26,8 @@ class MainWindow(QMainWindow):
 		self.ui.fileBasicOpen.clicked.connect(self.open_file)
 		open_file_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
 		open_file_shortcut.activated.connect(self.open_file)
-		self.ui.fileBasicRename.clicked.connect(self.rename_file)
+		self.ui.fileBasicMove.clicked.connect(self.move_file)
+		self.ui.fileBasicDelete.clicked.connect(self.delete_file)
 		self.ui.fileBasicSave.clicked.connect(self.save_file)
 		save_file_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
 		save_file_shortcut.activated.connect(self.save_file)
@@ -43,10 +44,12 @@ class MainWindow(QMainWindow):
 		self.ui.editCaseSentence.clicked.connect(get_edit_case_action(EditCaseOption.Sentence))
 		self.ui.editCaseTitle.clicked.connect(get_edit_case_action(EditCaseOption.Title))
 
+		self.ui.tabWidget.removeTab(0)
+		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 		# TODO ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def new_file(self):
-		pass  # TODO
+		self.ui.tabWidget.addTab(FileTab("Untitled"), "Untitled")
 
 	def open_file(self):
 		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", PERSISTENT_DATA.file_dialog_dir, "Text Files (*.txt *.md *.log);; All Files (*)")
@@ -57,10 +60,13 @@ class MainWindow(QMainWindow):
 				self.open_file_content(file)
 
 	def open_file_content(self, file):
-		self.ui.textArea.setPlainText(Path(file).read_text())  # TODO don't open if file is too big - set maximum in settings
+		self.get_tab().text_area.setPlainText(Path(file).read_text())  # TODO don't open if file is too big - set maximum in settings
 
-	def rename_file(self):
+	def move_file(self):
 		pass  # TODO
+
+	def delete_file(self):
+		pass  # TODO make sure to prompt for confirmation first
 
 	def save_file(self):
 		pass  # TODO
@@ -73,3 +79,9 @@ class MainWindow(QMainWindow):
 
 	def save_all_files(self):
 		pass  # TODO
+
+	def get_tab(self, pos: int | None = None) -> FileTab:
+		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
+
+	def close_tab(self, pos):
+		self.ui.tabWidget.removeTab(pos)  # TODO confirmation if unsaved changes

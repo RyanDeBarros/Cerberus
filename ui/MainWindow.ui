@@ -14,304 +14,317 @@
    <string>Cerberus</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QToolBox" name="toolBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>120</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="filePage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>120</width>
+         <height>432</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>File</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QToolBox" name="toolBox_3">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="fileBasicPage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>102</width>
+             <height>354</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Basic</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QPushButton" name="fileBasicNew">
+              <property name="toolTip">
+               <string>Ctrl+N</string>
+              </property>
+              <property name="text">
+               <string>New</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicOpen">
+              <property name="toolTip">
+               <string>Ctrl+O</string>
+              </property>
+              <property name="text">
+               <string>Open</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicMove">
+              <property name="text">
+               <string>Move</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicDelete">
+              <property name="text">
+               <string>Delete</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicSave">
+              <property name="toolTip">
+               <string>Ctrl+S</string>
+              </property>
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicSaveAs">
+              <property name="text">
+               <string>Save As</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicSaveCopy">
+              <property name="text">
+               <string>Save Copy</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicSaveAll">
+              <property name="toolTip">
+               <string>Ctrl+Shift+S</string>
+              </property>
+              <property name="text">
+               <string>Save All</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>21</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="fileScratchPage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>102</width>
+             <height>354</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Scratch</string>
+           </attribute>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="editPage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>120</width>
+         <height>432</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Edit</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QToolBox" name="toolBox_2">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="editBasicPage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>102</width>
+             <height>354</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Basic</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="editCasePage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>99</width>
+             <height>178</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Case</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="editCaseUpper">
+              <property name="text">
+               <string>UPPER</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editCaseLower">
+              <property name="text">
+               <string>lower</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editCaseCapitalize">
+              <property name="text">
+               <string>Capitalize</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editCaseSentence">
+              <property name="text">
+               <string>Sentence</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editCaseTitle">
+              <property name="text">
+               <string>Title</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="searchPage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>120</width>
+         <height>432</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Search</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="scriptingPage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>120</width>
+         <height>432</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Scripting</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="settingsPage">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>120</width>
+         <height>432</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Settings</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
       </property>
       <widget class="QWidget" name="startingTab">
        <attribute name="title">
         <string>* Untitled</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QToolBox" name="toolBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="filePage">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>120</width>
-             <height>385</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>File</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QToolBox" name="toolBox_3">
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <widget class="QWidget" name="fileBasicPage">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>102</width>
-                 <height>307</height>
-                </rect>
-               </property>
-               <attribute name="label">
-                <string>Basic</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <widget class="QPushButton" name="fileBasicNew">
-                  <property name="toolTip">
-                   <string>Ctrl+N</string>
-                  </property>
-                  <property name="text">
-                   <string>New</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicOpen">
-                  <property name="toolTip">
-                   <string>Ctrl+O</string>
-                  </property>
-                  <property name="text">
-                   <string>Open</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicRename">
-                  <property name="text">
-                   <string>Rename</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="Line" name="line">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicSave">
-                  <property name="toolTip">
-                   <string>Ctrl+S</string>
-                  </property>
-                  <property name="text">
-                   <string>Save</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicSaveAs">
-                  <property name="text">
-                   <string>Save As</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicSaveCopy">
-                  <property name="text">
-                   <string>Save Copy</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="fileBasicSaveAll">
-                  <property name="toolTip">
-                   <string>Ctrl+Shift+S</string>
-                  </property>
-                  <property name="text">
-                   <string>Save All</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>53</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="fileScratchPage">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>102</width>
-                 <height>307</height>
-                </rect>
-               </property>
-               <attribute name="label">
-                <string>Scratch</string>
-               </attribute>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="editPage">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>120</width>
-             <height>385</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Edit</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QToolBox" name="toolBox_2">
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <widget class="QWidget" name="editBasicPage">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>102</width>
-                 <height>307</height>
-                </rect>
-               </property>
-               <attribute name="label">
-                <string>Basic</string>
-               </attribute>
-              </widget>
-              <widget class="QWidget" name="editCasePage">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>102</width>
-                 <height>307</height>
-                </rect>
-               </property>
-               <attribute name="label">
-                <string>Case</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <item>
-                 <widget class="QPushButton" name="editCaseUpper">
-                  <property name="text">
-                   <string>UPPER</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="editCaseLower">
-                  <property name="text">
-                   <string>lower</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="editCaseCapitalize">
-                  <property name="text">
-                   <string>Capitalize</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="editCaseSentence">
-                  <property name="text">
-                   <string>Sentence</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="editCaseTitle">
-                  <property name="text">
-                   <string>Title</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="searchPage">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>120</width>
-             <height>385</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Search</string>
-           </attribute>
-          </widget>
-          <widget class="QWidget" name="scriptingPage">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>120</width>
-             <height>385</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Scripting</string>
-           </attribute>
-          </widget>
-          <widget class="QWidget" name="settingsPage">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>120</width>
-             <height>385</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Settings</string>
-           </attribute>
-          </widget>
-         </widget>
-        </item>
         <item>
          <widget class="QPlainTextEdit" name="textArea"/>
         </item>
