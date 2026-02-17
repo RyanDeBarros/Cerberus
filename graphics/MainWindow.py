@@ -1,9 +1,8 @@
-import os.path
 from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
-from PySide6.QtWidgets import QMainWindow, QScrollArea, QFileDialog
+from PySide6.QtWidgets import QMainWindow, QScrollArea
 
 from graphics import FileTab
 from storage import PERSISTENT_DATA
@@ -49,18 +48,20 @@ class MainWindow(QMainWindow):
 		# TODO ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def new_file(self):
-		self.ui.tabWidget.addTab(FileTab("Untitled"), "Untitled")
+		self.add_tab(None)
 
 	def open_file(self):
-		filenames, _ = QFileDialog.getOpenFileNames(self, "Open File", PERSISTENT_DATA.file_dialog_dir, "Text Files (*.txt *.md *.log);; All Files (*)")
-		if filenames:
-			PERSISTENT_DATA.file_dialog_dir = os.path.dirname(filenames[0])
-			PERSISTENT_DATA.store()
-			for file in filenames:
-				self.open_file_content(file)
+		filenames = PERSISTENT_DATA.get_open_filenames(self)
+		for file in filenames:
+			self.add_tab(file)
 
-	def open_file_content(self, file):
-		self.get_tab().text_area.setPlainText(Path(file).read_text())  # TODO don't open if file is too big - set maximum in settings
+	def add_tab(self, filepath: Path | str | None):
+		if isinstance(filepath, str):
+			filepath = Path(filepath).resolve()
+		tab = FileTab(filepath)
+		self.ui.tabWidget.addTab(tab, tab.tabname())
+		self.ui.tabWidget.setCurrentWidget(tab)
+		tab.focus_text()
 
 	def move_file(self):
 		pass  # TODO
@@ -69,7 +70,8 @@ class MainWindow(QMainWindow):
 		pass  # TODO make sure to prompt for confirmation first
 
 	def save_file(self):
-		pass  # TODO
+		tab = self.get_tab()
+		tab.on_save()
 
 	def save_file_as(self):
 		pass  # TODO
@@ -78,10 +80,14 @@ class MainWindow(QMainWindow):
 		pass  # TODO
 
 	def save_all_files(self):
-		pass  # TODO
+		for i in range(self.ui.tabWidget.count()):
+			tab = self.get_tab(i)
+			tab.on_save()
 
 	def get_tab(self, pos: int | None = None) -> FileTab:
 		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
 
-	def close_tab(self, pos):
-		self.ui.tabWidget.removeTab(pos)  # TODO confirmation if unsaved changes
+	def close_tab(self, pos):  # TODO Close All, Close Others, etc.
+		tab = self.get_tab(pos)
+		if tab.on_close():  # TODO check on_close() on quitting application
+			self.ui.tabWidget.removeTab(pos)
