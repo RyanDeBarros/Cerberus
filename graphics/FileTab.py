@@ -56,7 +56,7 @@ class FileTab(QWidget):
 
 	def load(self):
 		if self.filepath is not None:
-			self.text_area.setPlainText(self.filepath.read_text())  # TODO don't open if file is too big - set maximum in settings
+			self.text_area.setPlainText(self.filepath.read_text())  # TODO(3) don't open if file is too big - set maximum in settings
 			self.asterisk = False
 
 	def _set_tab_text(self):
@@ -79,4 +79,4 @@ class FileTab(QWidget):
 			return True
 		else:
 			return False
-		# TODO if overwriting an existing file (whether here or through some other action): check if that file is already open in Cerberus. If it is, then once that tab is focused, popup options to reload file or keep text content as unsaved changes. In fact, cache the last modified timestamp of currently open files so as to execute this popup when that timestamp changes (can be some kind of watchdog system or simply a separate thread that checks timestamps on a timer).
+		# TODO(2) if overwriting an existing file (whether here or through some other action): check if that file is already open in Cerberus. If it is, then once that tab is focused, popup options to reload file or keep text content as unsaved changes. In fact, cache the last modified timestamp of currently open files so as to execute this popup when that timestamp changes (can be some kind of watchdog system or simply a separate thread that checks timestamps on a timer).

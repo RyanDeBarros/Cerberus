@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
 
 		self.ui.tabWidget.removeTab(0)
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
-		# TODO ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
+		# TODO(2) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def new_file(self):
 		self.add_tab(None)
@@ -64,20 +64,20 @@ class MainWindow(QMainWindow):
 		tab.focus_text()
 
 	def move_file(self):
-		pass  # TODO
+		pass  # TODO(1)
 
 	def delete_file(self):
-		pass  # TODO make sure to prompt for confirmation first
+		pass  # TODO(1) make sure to prompt for confirmation first
 
 	def save_file(self):
 		tab = self.get_tab()
 		tab.on_save()
 
 	def save_file_as(self):
-		pass  # TODO
+		pass  # TODO(1)
 
 	def save_file_copy(self):
-		pass  # TODO
+		pass  # TODO(1)
 
 	def save_all_files(self):
 		for i in range(self.ui.tabWidget.count()):
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
 	def get_tab(self, pos: int | None = None) -> FileTab:
 		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
 
-	def close_tab(self, pos):  # TODO Close All, Close Others, etc.
+	def close_tab(self, pos):  # TODO(1) Close All, Close Others, etc.
 		tab = self.get_tab(pos)
-		if tab.on_close():  # TODO check on_close() on quitting application
+		if tab.on_close():  # TODO(1) check on_close() on quitting application
 			self.ui.tabWidget.removeTab(pos)
