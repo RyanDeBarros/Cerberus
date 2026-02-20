@@ -64,20 +64,19 @@ class MainWindow(QMainWindow):
 		tab.focus_text()
 
 	def move_file(self):
-		pass  # TODO(1)
+		self.get_tab().move_file()
 
 	def delete_file(self):
 		pass  # TODO(1) make sure to prompt for confirmation first
 
 	def save_file(self):
-		tab = self.get_tab()
-		tab.on_save()
+		self.get_tab().on_save()
 
 	def save_file_as(self):
-		pass  # TODO(1)
+		self.get_tab().save_as()
 
 	def save_file_copy(self):
-		pass  # TODO(1)
+		self.get_tab().save_copy()
 
 	def save_all_files(self):
 		for i in range(self.ui.tabWidget.count()):
