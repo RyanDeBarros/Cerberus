@@ -108,8 +108,9 @@ def set_title_case():
 
 def get_wrapped_edit_case_action(action):
 	def f():
-		with restore_cursor():
-			action()
+		if AppContext.main_window().has_tab():
+			with restore_cursor():
+				action()
 	return f
 
 

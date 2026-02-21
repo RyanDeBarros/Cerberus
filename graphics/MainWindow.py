@@ -1,4 +1,3 @@
-import os
 import platform
 import subprocess
 from pathlib import Path
@@ -49,7 +48,8 @@ class MainWindow(QMainWindow):
 
 		self.ui.tabWidget.removeTab(0)
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
-		# TODO(2) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
+
+	# TODO(2) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def new_file(self):
 		self.add_tab(None)
@@ -69,21 +69,24 @@ class MainWindow(QMainWindow):
 		tab.focus_text()
 
 	def move_file(self):
-		self.get_tab().move_file()
+		if self.has_tab():
+			self.get_tab().move_file()
 
 	def delete_file(self):
-		if self.get_tab().on_delete():
+		if self.has_tab() and self.get_tab().on_delete():
 			self.ui.tabWidget.removeTab(self.ui.tabWidget.currentIndex())
-		# TODO(1) check that tab is not None in get_tab() (make sure to return None if no tabs)
 
 	def save_file(self):
-		self.get_tab().on_save()
+		if self.has_tab():
+			self.get_tab().on_save()
 
 	def save_file_as(self):
-		self.get_tab().save_as()
+		if self.has_tab():
+			self.get_tab().save_as()
 
 	def save_file_copy(self):
-		self.get_tab().save_copy()
+		if self.has_tab():
+			self.get_tab().save_copy()
 
 	def save_all_files(self):
 		for i in range(self.ui.tabWidget.count()):
@@ -91,7 +94,7 @@ class MainWindow(QMainWindow):
 			tab.on_save()
 
 	def open_explorer(self):
-		path = self.get_tab().filepath if self.get_tab() else PERSISTENT_DATA.file_dialog_dir
+		path = self.get_tab().filepath if self.has_tab() else PERSISTENT_DATA.file_dialog_dir
 		if platform.system() == "Windows":
 			subprocess.run(["explorer", "/select,", str(path)])
 		elif platform.system() == "Darwin":
@@ -105,8 +108,11 @@ class MainWindow(QMainWindow):
 				except FileNotFoundError:
 					subprocess.run(["xdg-open", str(path.parent)])
 
-	def get_tab(self, pos: int | None = None) -> FileTab:
+	def get_tab(self, pos: int | None = None) -> FileTab | None:
 		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
+
+	def has_tab(self):
+		return self.ui.tabWidget.count() > 0
 
 	def close_tab(self, pos):  # TODO(1) Close All, Close Others, etc.
 		tab = self.get_tab(pos)
