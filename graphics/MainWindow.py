@@ -1,3 +1,6 @@
+import os
+import platform
+import subprocess
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -35,6 +38,7 @@ class MainWindow(QMainWindow):
 		self.ui.fileBasicSaveAll.clicked.connect(self.save_all_files)
 		save_all_files_shortcut = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
 		save_all_files_shortcut.activated.connect(self.save_all_files)
+		self.ui.fileBasicExplorer.clicked.connect(self.open_explorer)
 
 		from processing import get_edit_case_action, EditCaseOption
 		self.ui.editCaseUpper.clicked.connect(get_edit_case_action(EditCaseOption.Upper))
@@ -86,6 +90,21 @@ class MainWindow(QMainWindow):
 			tab = self.get_tab(i)
 			tab.on_save()
 
+	def open_explorer(self):
+		path = self.get_tab().filepath if self.get_tab() else PERSISTENT_DATA.file_dialog_dir
+		if platform.system() == "Windows":
+			subprocess.run(["explorer", "/select,", str(path)])
+		elif platform.system() == "Darwin":
+			subprocess.run(["open", "-R", path])
+		else:
+			try:
+				subprocess.run(["nautilus", "--select", str(path)])
+			except FileNotFoundError:
+				try:
+					subprocess.run(["dolphin", "--select", str(path)])
+				except FileNotFoundError:
+					subprocess.run(["xdg-open", str(path.parent)])
+
 	def get_tab(self, pos: int | None = None) -> FileTab:
 		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
 
@@ -93,5 +112,3 @@ class MainWindow(QMainWindow):
 		tab = self.get_tab(pos)
 		if tab.on_close():  # TODO(1) check on_close() on quitting application
 			self.ui.tabWidget.removeTab(pos)
-
-# TODO(1) button to open file explorer
