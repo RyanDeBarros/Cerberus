@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
-from PySide6.QtWidgets import QMainWindow, QScrollArea
+from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
 
 from graphics import FileTab
 from storage import PERSISTENT_DATA
@@ -46,10 +46,39 @@ class MainWindow(QMainWindow):
 		self.ui.editCaseSentence.clicked.connect(get_edit_case_action(EditCaseOption.Sentence))
 		self.ui.editCaseTitle.clicked.connect(get_edit_case_action(EditCaseOption.Title))
 
+		self.ui.tabWidget.tabBar().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+		self.ui.tabWidget.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
+
 		self.ui.tabWidget.removeTab(0)
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 
+	# TODO(3) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
 	# TODO(2) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
+
+	def on_tab_context_menu(self, pos):
+		index = self.ui.tabWidget.tabBar().tabAt(pos)
+		if index == -1:
+			return
+
+		menu = QMenu(self)
+		close_action = menu.addAction("Close")
+		close_all_action = menu.addAction("Close All")
+		close_others_action = menu.addAction("Close Others")
+		action = menu.exec(self.ui.tabWidget.tabBar().mapToGlobal(pos))
+
+		if action == close_action:
+			self.close_tab(index)
+		elif action == close_all_action:
+			for _ in range(self.ui.tabWidget.count()):
+				self.close_tab(0)
+		elif action == close_others_action:
+			after = self.ui.tabWidget.count() - 1 - index
+			if after > 0:
+				for _ in range(after):
+					self.close_tab(self.ui.tabWidget.count() - 1)
+			if index > 0:
+				for _ in range(index):
+					self.close_tab(0)
 
 	def new_file(self):
 		self.add_tab(None)
@@ -114,7 +143,7 @@ class MainWindow(QMainWindow):
 	def has_tab(self):
 		return self.ui.tabWidget.count() > 0
 
-	def close_tab(self, pos):  # TODO(1) Close All, Close Others, etc.
+	def close_tab(self, pos):
 		tab = self.get_tab(pos)
-		if tab.on_close():  # TODO(1) check on_close() on quitting application
+		if tab.on_close():
 			self.ui.tabWidget.removeTab(pos)
