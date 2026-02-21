@@ -21,6 +21,13 @@ class FileTab(QWidget):
 		self.load()
 		self.focus_text()
 
+	def on_added(self):
+		self._on_filepath_changed()
+
+	def _on_filepath_changed(self):
+		fullpath = self.filepath.as_posix() if self.filepath else "Untitled"
+		self.get_tab_ref().setToolTip(fullpath if not self.asterisk else f"* {fullpath}")
+
 	def focus_text(self):
 		self.text_area.setFocus()
 
@@ -61,11 +68,18 @@ class FileTab(QWidget):
 
 	def _set_tab_text(self):
 		from graphics import AppContext
-		index = AppContext.main_window().ui.tabWidget.indexOf(self)
-		AppContext.main_window().ui.tabWidget.setTabText(index, self.tabname())
+		AppContext.main_window().ui.tabWidget.setTabText(self.get_tab_index(), self.tabname())
+
+	def get_tab_index(self):
+		from graphics import AppContext
+		return AppContext.main_window().ui.tabWidget.indexOf(self)
+
+	def get_tab_ref(self):
+		from graphics import AppContext
+		return AppContext.main_window().get_tab(self.get_tab_index())
 
 	def raw_tabname(self):
-		return self.filepath.stem if self.filepath else "Untitled"
+		return self.filepath.name if self.filepath else "Untitled"
 
 	def tabname(self):
 		filename = self.raw_tabname()
@@ -75,6 +89,7 @@ class FileTab(QWidget):
 		filename = PERSISTENT_DATA.get_save_filename(self)
 		if filename and filename != self.filepath:
 			self.filepath = Path(filename).resolve()
+			self._on_filepath_changed()
 			self._set_tab_text()
 			return True
 		else:
@@ -90,6 +105,7 @@ class FileTab(QWidget):
 		filename = PERSISTENT_DATA.get_save_filename(self)
 		if filename:
 			self.filepath = Path(filename).resolve()
+			self._on_filepath_changed()
 			self.asterisk = True
 			self.on_save()
 
@@ -97,3 +113,16 @@ class FileTab(QWidget):
 		filename = PERSISTENT_DATA.get_save_filename(self)
 		if filename:
 			Path(filename).resolve().write_text(self.text_area.toPlainText())
+
+	def on_delete(self):
+		mbox = QMessageBox(QMessageBox.Icon.Warning, "Confirm Delete File", f"Are you sure you want to delete {self.filepath if self.filepath else "Untitled"}?")
+		yes = mbox.addButton("Yes", QMessageBox.ButtonRole.YesRole)
+		cancel = mbox.addButton("Cancel", QMessageBox.ButtonRole.RejectRole)
+		mbox.setDefaultButton(cancel)
+		mbox.exec()
+		if mbox.clickedButton() == yes:
+			if self.filepath:
+				self.filepath.unlink()
+			return True
+		else:
+			return False

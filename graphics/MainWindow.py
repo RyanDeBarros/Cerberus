@@ -61,13 +61,16 @@ class MainWindow(QMainWindow):
 		tab = FileTab(filepath)
 		self.ui.tabWidget.addTab(tab, tab.tabname())
 		self.ui.tabWidget.setCurrentWidget(tab)
+		tab.on_added()
 		tab.focus_text()
 
 	def move_file(self):
 		self.get_tab().move_file()
 
 	def delete_file(self):
-		pass  # TODO(1) make sure to prompt for confirmation first
+		if self.get_tab().on_delete():
+			self.ui.tabWidget.removeTab(self.ui.tabWidget.currentIndex())
+		# TODO(1) check that tab is not None in get_tab() (make sure to return None if no tabs)
 
 	def save_file(self):
 		self.get_tab().on_save()
@@ -90,3 +93,5 @@ class MainWindow(QMainWindow):
 		tab = self.get_tab(pos)
 		if tab.on_close():  # TODO(1) check on_close() on quitting application
 			self.ui.tabWidget.removeTab(pos)
+
+# TODO(1) button to open file explorer
