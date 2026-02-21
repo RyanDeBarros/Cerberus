@@ -6,7 +6,7 @@ from .StorageKeeper import StorageKeeper
 SYMBOLS_DATA_PATH = Path('data/symbols.toml')
 
 
-# TODO(2) app settings to configure Symbols
+# TODO(1) app settings to configure Symbols
 @dataclass
 class Symbols:
 	whitespace = [' ', '\t', '\r', '\n']

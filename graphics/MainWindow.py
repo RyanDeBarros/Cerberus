@@ -52,8 +52,8 @@ class MainWindow(QMainWindow):
 		self.ui.tabWidget.removeTab(0)
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 
-	# TODO(3) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
-	# TODO(2) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
+	# TODO(2) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
+	# TODO(1) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def on_tab_context_menu(self, pos):
 		index = self.ui.tabWidget.tabBar().tabAt(pos)
