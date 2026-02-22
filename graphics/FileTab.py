@@ -33,16 +33,14 @@ class FileTab(QWidget):
 
 	def text_changed(self):
 		if not self.asterisk:
-			self.asterisk = True
-			self._set_tab_text()
+			self.set_asterisk(True)
 
 	def on_save(self):
 		if self.filepath is None and not self._init_filepath():
 			return
 
 		if self.asterisk:
-			self.asterisk = False
-			self._set_tab_text()
+			self.set_asterisk(False)
 			self.filepath.write_text(self.text_area.toPlainText())
 
 	def on_close(self):
@@ -64,7 +62,11 @@ class FileTab(QWidget):
 	def load(self):
 		if self.filepath is not None:
 			self.text_area.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
-			self.asterisk = False
+			self.set_asterisk(False)
+
+	def set_asterisk(self, asterisk):
+		self.asterisk = asterisk
+		self._set_tab_text()
 
 	def _set_tab_text(self):
 		from graphics import AppContext

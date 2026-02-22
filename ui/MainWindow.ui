@@ -55,8 +55,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>354</height>
+             <width>99</width>
+             <height>356</height>
             </rect>
            </property>
            <attribute name="label">
@@ -87,6 +87,13 @@
              <widget class="QPushButton" name="fileBasicMove">
               <property name="text">
                <string>Move</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fileBasicReload">
+              <property name="text">
+               <string>Reload</string>
               </property>
              </widget>
             </item>
@@ -172,8 +179,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>354</height>
+             <width>96</width>
+             <height>26</height>
             </rect>
            </property>
            <attribute name="label">
@@ -189,8 +196,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>120</width>
-         <height>432</height>
+         <width>96</width>
+         <height>132</height>
         </rect>
        </property>
        <attribute name="label">
@@ -207,8 +214,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>354</height>
+             <width>96</width>
+             <height>26</height>
             </rect>
            </property>
            <attribute name="label">
@@ -287,8 +294,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>120</width>
-         <height>432</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">
@@ -300,8 +307,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>120</width>
-         <height>432</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">
@@ -313,8 +320,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>120</width>
-         <height>432</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">

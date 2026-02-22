@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
 		open_file_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
 		open_file_shortcut.activated.connect(self.open_file)
 		self.ui.fileBasicMove.clicked.connect(self.move_file)
+		self.ui.fileBasicReload.clicked.connect(self.reload_file)
 		self.ui.fileBasicDelete.clicked.connect(self.delete_file)
 		self.ui.fileBasicSave.clicked.connect(self.save_file)
 		save_file_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
@@ -100,6 +101,10 @@ class MainWindow(QMainWindow):
 	def move_file(self):
 		if self.has_tab():
 			self.get_tab().move_file()
+
+	def reload_file(self):
+		if self.has_tab():
+			self.get_tab().load()
 
 	def delete_file(self):
 		if self.has_tab() and self.get_tab().on_delete():
