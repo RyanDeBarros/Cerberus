@@ -16,7 +16,7 @@ class PersistentData:
 	def __init__(self):
 		self.storage = StorageKeeper(self, [
 			"file_dialog_dir",
-		], Path('data/persistent.toml'))
+		], 'persistent.toml')
 
 	def _store(self):
 		self.storage.store()

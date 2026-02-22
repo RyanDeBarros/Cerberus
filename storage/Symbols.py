@@ -23,7 +23,7 @@ class Symbols:
 			"lowercase_word_characters",
 			"lowercase_nontitle_words",
 			"lowercase_alphabet",
-		], Path('data/symbols.toml'))
+		], 'symbols.toml')
 
 	def store(self):
 		self.storage.store()

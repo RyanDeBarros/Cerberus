@@ -4,10 +4,10 @@ import toml
 
 
 class StorageKeeper:
-	def __init__(self, obj, names: list[str], path: Path):
+	def __init__(self, obj, names: list[str], filename: str):
 		self.obj = obj
 		self.names = names
-		self.path = path
+		self.path = self.data_path() / filename
 
 		if self.path.exists():
 			with open(self.path, 'r') as f:
@@ -23,3 +23,7 @@ class StorageKeeper:
 			d[name] = getattr(self.obj, name)
 		with open(self.path, 'w') as f:
 			toml.dump(d, f)
+
+	@staticmethod
+	def data_path():
+		return Path('data').resolve()
