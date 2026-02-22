@@ -15,11 +15,13 @@ class EditCaseOption(Enum):
 
 
 def set_upper_case():
-	AppContext.insert_text(AppContext.selected_text().upper())
+	text_area = AppContext.text_area()
+	text_area.insert_text(text_area.selected_text().upper())
 
 
 def set_lower_case():
-	AppContext.insert_text(AppContext.selected_text().lower())
+	text_area = AppContext.text_area()
+	text_area.insert_text(text_area.selected_text().lower())
 
 
 def set_capitalize_case():
@@ -33,7 +35,7 @@ def set_capitalize_case():
 				it.write_up_to_next_subword(out)
 		else:
 			it.write_char(out)
-	AppContext.insert_text(out.getvalue())
+	AppContext.text_area().insert_text(out.getvalue())
 
 
 def set_sentence_case():
@@ -58,7 +60,7 @@ def set_sentence_case():
 				continue
 
 		it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
-	AppContext.insert_text(out.getvalue())
+	AppContext.text_area().insert_text(out.getvalue())
 
 
 def set_title_case():
@@ -89,7 +91,7 @@ def set_title_case():
 		else:
 			it.write_up_to_next_subword(out, early_exit=early_exit, case=CharacterCase.LOWER)
 
-	AppContext.insert_text(out.getvalue())
+	AppContext.text_area().insert_text(out.getvalue())
 
 
 def get_wrapped_edit_case_action(action):
