@@ -89,5 +89,8 @@ class TextArea:
 		self.text_edit.setTextCursor(cursor)
 		self.text_edit.setFocus()
 
+	def all_text(self) -> str:
+		return self.text_edit.toPlainText()
+
 	def selected_text(self) -> str:
 		return self.text_edit.textCursor().selectedText().replace('\u2029', '\n')

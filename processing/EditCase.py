@@ -96,7 +96,7 @@ def set_title_case():
 
 def get_wrapped_edit_case_action(action):
 	def f():
-		if AppContext.main_window().has_tab():
+		if AppContext.main_window().on_file_tab():
 			with restore_selection():
 				action()
 	return f

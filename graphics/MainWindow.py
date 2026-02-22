@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
 
-from graphics import FileTab
+from graphics import FileTab, AbstractTab
 from storage import PERSISTENT_DATA
 from ui import Ui_MainWindow
 
@@ -54,7 +54,6 @@ class MainWindow(QMainWindow):
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 
 	# TODO(2) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
-	# TODO(1) ctrl+Z resets text cursor in text area. intercept event in order to create undo action that will restore the text selection while calling QPlainTextEdit undo()/redo().
 
 	def on_tab_context_menu(self, pos):
 		index = self.ui.tabWidget.tabBar().tabAt(pos)
@@ -99,36 +98,38 @@ class MainWindow(QMainWindow):
 		tab.focus_text()
 
 	def move_file(self):
-		if self.has_tab():
-			self.get_tab().move_file()
+		if self.on_file_tab():
+			self.get_file_tab().move_file()
 
 	def reload_file(self):
-		if self.has_tab():
-			self.get_tab().load()
+		if self.on_file_tab():
+			self.get_file_tab().load()
 
 	def delete_file(self):
-		if self.has_tab() and self.get_tab().on_delete():
+		if self.on_file_tab() and self.get_file_tab().on_delete():
 			self.ui.tabWidget.removeTab(self.ui.tabWidget.currentIndex())
 
 	def save_file(self):
-		if self.has_tab():
-			self.get_tab().on_save()
+		if self.on_file_tab():
+			self.get_file_tab().on_save()
 
 	def save_file_as(self):
-		if self.has_tab():
-			self.get_tab().save_as()
+		if self.on_file_tab():
+			self.get_file_tab().save_as()
 
 	def save_file_copy(self):
-		if self.has_tab():
-			self.get_tab().save_copy()
+		if self.on_file_tab():
+			self.get_file_tab().save_copy()
 
 	def save_all_files(self):
 		for i in range(self.ui.tabWidget.count()):
-			tab = self.get_tab(i)
-			tab.on_save()
+			self.get_tab(i).on_save()
 
 	def open_explorer(self):
-		path = self.get_tab().filepath if self.has_tab() else PERSISTENT_DATA.file_dialog_dir
+		if not self.on_file_tab():
+			return
+
+		path = self.get_file_tab().filepath if self.on_file_tab() else PERSISTENT_DATA.file_dialog_dir
 		if platform.system() == "Windows":
 			subprocess.run(["explorer", "/select,", str(path)])
 		elif platform.system() == "Darwin":
@@ -142,13 +143,18 @@ class MainWindow(QMainWindow):
 				except FileNotFoundError:
 					subprocess.run(["xdg-open", str(path.parent)])
 
-	def get_tab(self, pos: int | None = None) -> FileTab | None:
-		return self.ui.tabWidget.currentWidget() if pos is None else self.ui.tabWidget.widget(pos)
-
 	def has_tab(self):
 		return self.ui.tabWidget.count() > 0
 
+	def get_tab(self, pos: int | None) -> AbstractTab:
+		return self.ui.tabWidget.widget(pos) if pos else self.ui.tabWidget.currentWidget()
+
+	def on_file_tab(self) -> bool:
+		return self.has_tab() and isinstance(self.ui.tabWidget.currentWidget(), FileTab)
+
+	def get_file_tab(self) -> FileTab:
+		return self.ui.tabWidget.currentWidget()
+
 	def close_tab(self, pos):
-		tab = self.get_tab(pos)
-		if tab.on_close():
+		if self.get_tab(pos).on_close():
 			self.ui.tabWidget.removeTab(pos)

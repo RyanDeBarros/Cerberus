@@ -24,4 +24,4 @@ def main_window() -> "MainWindow":
 
 
 def text_area() -> TextArea:
-	return MAIN_WINDOW.get_tab().text_area
+	return MAIN_WINDOW.get_file_tab().text_area

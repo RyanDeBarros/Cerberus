@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from io import StringIO
 
-from graphics import AppContext
+from processing import Selection
 from storage import SYMBOLS
 
 
@@ -37,16 +37,15 @@ class EarlyExit(ABC):
 
 
 class TextSelection:
-	def __init__(self, fulltext: str, position: FullIndex, anchor: FullIndex):
+	def __init__(self, fulltext: str, sel: Selection):
 		self.fulltext = fulltext
-		self.position = position
-		self.anchor = anchor
+		self.sel = sel
 
 	def full_index(self, i: SubIndex) -> FullIndex:
-		if self.position >= self.anchor:
-			return FullIndex(self.anchor + i)
+		if self.sel.position >= self.sel.anchor:
+			return FullIndex(self.sel.anchor + i)
 		else:
-			return FullIndex(self.position + i)
+			return FullIndex(self.sel.position + i)
 
 	def char(self, i: FullIndex | SubIndex) -> str:
 		if isinstance(i, SubIndex):
@@ -61,13 +60,13 @@ class TextSelection:
 		return self.fulltext[i:j]
 
 	def is_in_range(self, i: SubIndex) -> bool:
-		return 0 <= i < abs(self.position - self.anchor)
+		return 0 <= i < abs(self.sel.position - self.sel.anchor)
 
 	def full_size(self) -> int:
 		return len(self.fulltext)
 
 	def selection_size(self) -> int:
-		return abs(self.position - self.anchor)
+		return abs(self.sel.position - self.sel.anchor)
 
 
 class CharacterCase(Enum):
@@ -79,7 +78,8 @@ class CharacterCase(Enum):
 
 class TextIterator:
 	def __init__(self, index=SubIndex(0)):
-		self.text = TextSelection(AppContext.all_text(), AppContext.text_cursor().position(), AppContext.text_cursor().anchor())
+		from graphics import AppContext
+		self.text = TextSelection(AppContext.text_area().all_text(), AppContext.text_area().selection())
 		self.index = index
 
 	def valid(self) -> bool:

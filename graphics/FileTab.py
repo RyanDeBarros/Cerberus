@@ -1,16 +1,16 @@
 from pathlib import Path
+from typing import override
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QMessageBox
+from PySide6.QtWidgets import QVBoxLayout, QPlainTextEdit, QMessageBox
 
-from graphics import TextArea
+from graphics import TextArea, AbstractTab
 from storage import PERSISTENT_DATA
 
 
-class FileTab(QWidget):
+class FileTab(AbstractTab):
 	def __init__(self, filepath: Path | None):
 		super().__init__()
-		self.asterisk = False
 		self.filepath = filepath
 
 		self.vertical_layout = QVBoxLayout(self)
@@ -28,7 +28,7 @@ class FileTab(QWidget):
 
 	def _on_filepath_changed(self):
 		fullpath = self.filepath.as_posix() if self.filepath else "Untitled"
-		self.get_tab_ref().setToolTip(fullpath if not self.asterisk else f"* {fullpath}")
+		self.setToolTip(fullpath if not self.asterisk else f"* {fullpath}")
 
 	def focus_text(self):
 		self.text_edit.setFocus()
@@ -37,6 +37,7 @@ class FileTab(QWidget):
 		if not self.asterisk:
 			self.set_asterisk(True)
 
+	@override
 	def on_save(self):
 		if self.filepath is None and not self._init_filepath():
 			return
@@ -45,50 +46,14 @@ class FileTab(QWidget):
 			self.set_asterisk(False)
 			self.filepath.write_text(self.text_edit.toPlainText())
 
-	def on_close(self):
-		if not self.asterisk:
-			return True
-		mbox = QMessageBox(QMessageBox.Icon.Question, "Unsaved Changes", f"Do you want to save your changes to {self.raw_tabname()}?")
-		yes = mbox.addButton("Yes", QMessageBox.ButtonRole.YesRole)
-		no = mbox.addButton("No", QMessageBox.ButtonRole.NoRole)
-		cancel = mbox.addButton("Cancel", QMessageBox.ButtonRole.RejectRole)
-		mbox.setDefaultButton(cancel)
-		mbox.exec()
-		if mbox.clickedButton() == yes:
-			self.on_save()
-		elif mbox.clickedButton() == no:
-			pass
-		elif mbox.clickedButton() == cancel:
-			return False
-		return True
-
 	def load(self):
 		if self.filepath is not None:
 			self.text_edit.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
 			self.set_asterisk(False)
 
-	def set_asterisk(self, asterisk):
-		self.asterisk = asterisk
-		self._set_tab_text()
-
-	def _set_tab_text(self):
-		from graphics import AppContext
-		AppContext.main_window().ui.tabWidget.setTabText(self.get_tab_index(), self.tabname())
-
-	def get_tab_index(self):
-		from graphics import AppContext
-		return AppContext.main_window().ui.tabWidget.indexOf(self)
-
-	def get_tab_ref(self):
-		from graphics import AppContext
-		return AppContext.main_window().get_tab(self.get_tab_index())
-
+	@override
 	def raw_tabname(self):
 		return self.filepath.name if self.filepath else "Untitled"
-
-	def tabname(self):
-		filename = self.raw_tabname()
-		return filename if not self.asterisk else f"* {filename}"
 
 	def _init_filepath(self):
 		filename = PERSISTENT_DATA.get_save_filename(self)
