@@ -1,9 +1,59 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QObject, QEvent
+from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QMessageBox
 
+from processing import Selection
 from storage import PERSISTENT_DATA
+
+
+class UndoRedoFilter(QObject):
+	def __init__(self, text_area: QPlainTextEdit):
+		super().__init__()
+		self.text_area = text_area
+		self.text_area.installEventFilter(self)
+		self.undo_selections: list[Selection] = []
+		self.redo_selections: list[Selection] = []
+
+		self.can_undo = False
+		def on_undo_available(available):
+			self.can_undo = available
+		self.text_area.undoAvailable.connect(on_undo_available)
+
+		self.can_redo = False
+		def on_redo_available(available):
+			self.can_redo = available
+		self.text_area.redoAvailable.connect(on_redo_available)
+
+	def eventFilter(self, watched, event):
+		if isinstance(event, QKeyEvent) and event.type() == QEvent.Type.KeyPress and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+			if event.key() == Qt.Key.Key_Z:
+				if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+					self.redo()
+					return True
+				else:
+					self.undo()
+					return True
+			elif event.key() == Qt.Key.Key_Y and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+				self.redo()
+				return True
+
+		return super().eventFilter(watched, event)
+
+	def undo(self):
+		if self.can_undo:
+			self.text_area.undo()
+			print('undo')
+		else:
+			print('no undo')
+
+	def redo(self):
+		if self.can_redo:
+			self.text_area.redo()
+			print('redo')
+		else:
+			print('no redo')
 
 
 class FileTab(QWidget):
@@ -16,6 +66,7 @@ class FileTab(QWidget):
 		self.text_area = QPlainTextEdit()
 		self.vertical_layout.addWidget(self.text_area)
 		self.text_area.textChanged.connect(self.text_changed)
+		self.text_filter = UndoRedoFilter(self.text_area)
 
 		self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 		self.load()
@@ -50,6 +101,7 @@ class FileTab(QWidget):
 		yes = mbox.addButton("Yes", QMessageBox.ButtonRole.YesRole)
 		no = mbox.addButton("No", QMessageBox.ButtonRole.NoRole)
 		cancel = mbox.addButton("Cancel", QMessageBox.ButtonRole.RejectRole)
+		mbox.setDefaultButton(cancel)
 		mbox.exec()
 		if mbox.clickedButton() == yes:
 			self.on_save()

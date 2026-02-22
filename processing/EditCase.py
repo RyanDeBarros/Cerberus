@@ -1,9 +1,8 @@
-from contextlib import contextmanager
 from enum import Enum
 from io import StringIO
 
 from graphics import AppContext
-from processing import TextIterator, EarlyExitAtChar, CharacterCase
+from processing import TextIterator, EarlyExitAtChar, CharacterCase, restore_selection
 from storage import SYMBOLS
 
 
@@ -13,19 +12,6 @@ class EditCaseOption(Enum):
 	Capitalize = 3
 	Sentence = 4
 	Title = 5
-
-
-@contextmanager
-def restore_cursor():
-	cursor = AppContext.text_cursor()
-	position = cursor.position()
-	anchor = cursor.anchor()
-	yield cursor
-	AppContext.text_area().setFocus()
-	cursor = AppContext.text_cursor()
-	cursor.setPosition(anchor)
-	cursor.setPosition(position, cursor.MoveMode.KeepAnchor)
-	AppContext.set_text_cursor(cursor)
 
 
 def set_upper_case():
@@ -109,7 +95,7 @@ def set_title_case():
 def get_wrapped_edit_case_action(action):
 	def f():
 		if AppContext.main_window().has_tab():
-			with restore_cursor():
+			with restore_selection():
 				action()
 	return f
 

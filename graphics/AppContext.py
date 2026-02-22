@@ -1,20 +1,25 @@
+from typing import TYPE_CHECKING, Optional
+
 from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QApplication, QPlainTextEdit
 
-from graphics import MainWindow
+if TYPE_CHECKING:
+	from graphics.MainWindow import MainWindow
 
-MAIN_WINDOW: MainWindow | None = None
+
+MAIN_WINDOW: Optional["MainWindow"] = None
 
 
 def run_app():
 	global MAIN_WINDOW
 	app = QApplication([])
+	from graphics import MainWindow
 	MAIN_WINDOW = MainWindow()
 	MAIN_WINDOW.show()
 	app.exec()
 
 
-def main_window() -> MainWindow:
+def main_window() -> "MainWindow":
 	return MAIN_WINDOW
 
 
