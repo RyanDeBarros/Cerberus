@@ -1,12 +1,9 @@
 import os
-from dataclasses import dataclass
 
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from .StorageKeeper import StorageKeeper
 
-
-@dataclass
 class PersistentData:
 	file_dialog_dir: str = ""
 

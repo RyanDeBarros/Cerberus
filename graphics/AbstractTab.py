@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 
-class AbstractTabMeta(type(QWidget), ABCMeta):
+class AbstractTabMeta(ABCMeta, type(QWidget)):
 	pass
 
 

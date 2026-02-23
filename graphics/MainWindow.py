@@ -126,8 +126,8 @@ class MainWindow(QMainWindow):
 			self.ui.tabWidget.removeTab(self.ui.tabWidget.currentIndex())
 
 	def save_file(self):
-		if self.on_file_tab():
-			self.get_file_tab().on_save()
+		if self.has_tab():
+			self.get_tab(None).on_save()
 
 	def save_file_as(self):
 		if self.on_file_tab():

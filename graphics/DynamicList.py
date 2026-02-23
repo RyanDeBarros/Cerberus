@@ -1,5 +1,5 @@
 from PySide6.QtCore import QStringListModel
-from PySide6.QtWidgets import QWidget, QListView, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout
 
 from ui import Ui_DynamicList
 
@@ -47,4 +47,4 @@ class DynamicStringList(QWidget):
 		dlg.exec()
 
 		new_items = strings.get_items()
-		print(new_items)
+		return new_items, not strings.untouched and new_items != items

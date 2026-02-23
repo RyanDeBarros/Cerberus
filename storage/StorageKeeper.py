@@ -46,5 +46,5 @@ class StorageKeeper:
 		if name in self.defaults:
 			setattr(self.obj, name, self.defaults[name])
 
-	def is_default_attr(self, name):
-		return name not in self.defaults or getattr(self.obj, name) == self.defaults[name]
+	def get_default_attr(self, name):
+		return self.defaults.get(name)

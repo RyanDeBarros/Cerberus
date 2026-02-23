@@ -1,8 +1,6 @@
 from contextlib import contextmanager
-from dataclasses import dataclass
 
 
-@dataclass
 class Selection:
 	position: int = 0
 	anchor: int = 0

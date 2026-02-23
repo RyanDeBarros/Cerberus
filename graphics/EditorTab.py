@@ -3,7 +3,8 @@ from typing import override
 
 from PySide6.QtWidgets import QTabWidget
 
-from graphics import AbstractTab
+from graphics import AbstractTab, DynamicStringList
+from storage import StorageKeeper
 
 
 class EditorTab(AbstractTab):
@@ -41,3 +42,22 @@ class EditorTab(AbstractTab):
 			return True
 		else:
 			return False
+
+	# def rvt_get_temp_value(self, obj, name: str):
+	# 	def f():
+	# 		if name in self.temp:
+	# 			return self.temp[name]
+	# 		else:
+	# 			return getattr(obj, name)
+	# 	return f
+	#
+	# def rvt_set_temp_value(self, name: str):
+	# 	def f(value):
+	# 		self.temp[name] = value
+	# 	return f
+	#
+	# @staticmethod
+	# def rvt_get_default_value(storage: StorageKeeper, name: str):
+	# 	def f():
+	# 		return storage.get_default_attr(name)
+	# 	return f
