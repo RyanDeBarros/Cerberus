@@ -22,12 +22,9 @@ class StorageKeeper:
 				if name in d:
 					setattr(self.obj, name, d[name])
 
-	def load_attr(self, name):
-		if self.path.exists():
-			with open(self.path, 'r') as f:
-				d = toml.load(f)
-			if name in d:
-				setattr(self.obj, name, d[name])
+	def load_from(self, obj):
+		for name in self.names:
+			setattr(self.obj, name, getattr(obj, name))
 
 	def dump(self):
 		self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -37,14 +34,9 @@ class StorageKeeper:
 		with open(self.path, 'w') as f:
 			toml.dump(d, f)
 
-	def load_defaults(self):
+	def dump_to(self, obj):
 		for name in self.names:
-			if name in self.defaults:
-				setattr(self.obj, name, self.defaults[name])
-
-	def load_default_attr(self, name):
-		if name in self.defaults:
-			setattr(self.obj, name, self.defaults[name])
+			setattr(obj, name, getattr(self.obj, name))
 
 	def get_default_attr(self, name):
 		return self.defaults.get(name)
