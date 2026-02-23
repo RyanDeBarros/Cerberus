@@ -10,7 +10,7 @@ class Selection:
 
 @contextmanager
 def restore_selection():
-	from graphics import AppContext
+	import AppContext
 	sel = AppContext.text_area().selection()
 	yield sel
 	AppContext.text_area().set_selection(sel)

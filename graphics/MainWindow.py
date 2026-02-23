@@ -6,8 +6,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
 
-from graphics import FileTab, AbstractTab
-from storage import PERSISTENT_DATA
+import AppContext
+from graphics import FileTab, AbstractTab, SymbolsTab
 from ui import Ui_MainWindow
 
 
@@ -21,6 +21,11 @@ class MainWindow(QMainWindow):
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
+		# ------------
+		# --- File ---
+		# ------------
+
+		# --- Basic ---
 		self.ui.fileBasicNew.clicked.connect(self.new_file)
 		new_file_shortcut = QShortcut(QKeySequence("Ctrl+N"), self)
 		new_file_shortcut.activated.connect(self.new_file)
@@ -40,12 +45,23 @@ class MainWindow(QMainWindow):
 		save_all_files_shortcut.activated.connect(self.save_all_files)
 		self.ui.fileBasicExplorer.clicked.connect(self.open_explorer)
 
+		# ------------
+		# --- Edit ---
+		# ------------
+
+		# --- Case ---
 		from processing import get_edit_case_action, EditCaseOption
 		self.ui.editCaseUpper.clicked.connect(get_edit_case_action(EditCaseOption.Upper))
 		self.ui.editCaseLower.clicked.connect(get_edit_case_action(EditCaseOption.Lower))
 		self.ui.editCaseCapitalize.clicked.connect(get_edit_case_action(EditCaseOption.Capitalize))
 		self.ui.editCaseSentence.clicked.connect(get_edit_case_action(EditCaseOption.Sentence))
 		self.ui.editCaseTitle.clicked.connect(get_edit_case_action(EditCaseOption.Title))
+
+		# ----------------
+		# --- Settings ---
+		# ----------------
+		self.symbols_tab = SymbolsTab()
+		self.ui.settingsSymbols.clicked.connect(self.open_symbols_settings)
 
 		self.ui.tabWidget.tabBar().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 		self.ui.tabWidget.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
@@ -84,7 +100,7 @@ class MainWindow(QMainWindow):
 		self.add_tab(None)
 
 	def open_file(self):
-		filenames = PERSISTENT_DATA.get_open_filenames(self)
+		filenames = AppContext.persistent().get_open_filenames(self)
 		for file in filenames:
 			self.add_tab(file)
 
@@ -129,7 +145,7 @@ class MainWindow(QMainWindow):
 		if not self.on_file_tab():
 			return
 
-		path = self.get_file_tab().filepath if self.on_file_tab() else PERSISTENT_DATA.file_dialog_dir
+		path = self.get_file_tab().filepath if self.on_file_tab() else AppContext.persistent().file_dialog_dir
 		if platform.system() == "Windows":
 			subprocess.run(["explorer", "/select,", str(path)])
 		elif platform.system() == "Darwin":
@@ -158,3 +174,6 @@ class MainWindow(QMainWindow):
 	def close_tab(self, pos):
 		if self.get_tab(pos).on_close():
 			self.ui.tabWidget.removeTab(pos)
+
+	def open_symbols_settings(self):
+		self.symbols_tab.open(self.ui.tabWidget)

@@ -1,9 +1,8 @@
 from enum import Enum
 from io import StringIO
 
-from graphics import AppContext
+import AppContext
 from processing import TextIterator, EarlyExitAtChar, CharacterCase, restore_selection
-from storage import SYMBOLS
 
 
 class EditCaseOption(Enum):
@@ -41,10 +40,10 @@ def set_capitalize_case():
 def set_sentence_case():
 	out = StringIO()
 	it = TextIterator()
-	early_exit = EarlyExitAtChar(it, ''.join(SYMBOLS.sentence_enders))
+	early_exit = EarlyExitAtChar(it, ''.join(AppContext.symbols().sentence_enders))
 	on_first_word = it.is_first_word_of_sentence()
 	while it.valid():
-		if it.char() in SYMBOLS.sentence_enders:
+		if it.char() in AppContext.symbols().sentence_enders:
 			it.write_char(out)
 			on_first_word = True
 			continue
@@ -66,7 +65,7 @@ def set_sentence_case():
 def set_title_case():
 	out = StringIO()
 	it = TextIterator()
-	early_exit = EarlyExitAtChar(it, ''.join(SYMBOLS.sentence_enders))
+	early_exit = EarlyExitAtChar(it, ''.join(AppContext.symbols().sentence_enders))
 
 	if it.valid() and not it.is_first_letter_of_word():
 		it.write_chars(out, it.right_subword_len(), CharacterCase.LOWER)
@@ -75,7 +74,7 @@ def set_title_case():
 		on_first_word = it.is_first_word_of_sentence()
 
 	while it.valid():
-		if it.char() in SYMBOLS.sentence_enders:
+		if it.char() in AppContext.symbols().sentence_enders:
 			it.write_char(out)
 			on_first_word = True
 		elif it.is_word_char():
@@ -85,7 +84,7 @@ def set_title_case():
 				case = CharacterCase.CAPITALIZE
 			else:
 				word = it.word()
-				if word.lower() not in SYMBOLS.lowercase_nontitle_words or word.lower() == 'i':
+				if word.lower() not in AppContext.symbols().lowercase_nontitle_words or word.lower() == 'i':
 					case = CharacterCase.CAPITALIZE
 			it.write_chars(out, it.right_subword_len(), case)
 		else:

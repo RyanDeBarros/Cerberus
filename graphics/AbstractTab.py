@@ -17,11 +17,11 @@ class AbstractTab(QWidget, metaclass=AbstractTabMeta):
 		self._set_tab_text()
 
 	def _set_tab_text(self):
-		from graphics import AppContext
+		import AppContext
 		AppContext.main_window().ui.tabWidget.setTabText(self.get_tab_index(), self.tabname())
 
 	def get_tab_index(self):
-		from graphics import AppContext
+		import AppContext
 		return AppContext.main_window().ui.tabWidget.indexOf(self)
 
 	@abstractmethod

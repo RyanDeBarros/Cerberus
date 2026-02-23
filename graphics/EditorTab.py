@@ -4,14 +4,12 @@ from typing import override
 from PySide6.QtWidgets import QTabWidget
 
 from graphics import AbstractTab
-from storage.StorageKeeper import StorageKeeper
 
 
 class EditorTab(AbstractTab):
-	def __init__(self, name: str, filename: str):
+	def __init__(self, name: str):
 		super().__init__()
 		self.name = name
-		self.filepath = StorageKeeper.data_path() / filename
 		self.opened = False
 
 	@override
@@ -44,3 +42,6 @@ class EditorTab(AbstractTab):
 	def on_close(self):
 		if super().on_close():
 			self.opened = False
+			return True
+		else:
+			return False

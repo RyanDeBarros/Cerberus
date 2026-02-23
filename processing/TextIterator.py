@@ -3,7 +3,7 @@ from enum import Enum
 from io import StringIO
 
 from processing import Selection
-from storage import SYMBOLS
+import AppContext
 
 
 class FullIndex(int):
@@ -78,7 +78,6 @@ class CharacterCase(Enum):
 
 class TextIterator:
 	def __init__(self, index=SubIndex(0)):
-		from graphics import AppContext
 		self.text = TextSelection(AppContext.text_area().all_text(), AppContext.text_area().selection())
 		self.index = index
 
@@ -92,7 +91,7 @@ class TextIterator:
 		return self.text.char(self.index)
 
 	def is_word_char(self, j: SubIndex | FullIndex | None = None) -> bool:
-		return self.text.char(self.index if j is None else j).lower() in SYMBOLS.lowercase_word_characters
+		return self.text.char(self.index if j is None else j).lower() in AppContext.symbols().lowercase_word_characters
 
 	def to_next_char(self) -> None:
 		self.index += 1
@@ -219,7 +218,7 @@ class TextIterator:
 		self.index -= SubIndex(self.left_word_len())
 		prev_word_exists = False
 		while self.full_index() >= 0:
-			if self.char() in SYMBOLS.sentence_enders:
+			if self.char() in AppContext.symbols().sentence_enders:
 				break
 			elif self.is_word_char():
 				prev_word_exists = True

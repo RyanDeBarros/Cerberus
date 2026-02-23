@@ -1,2 +1,3 @@
-from .PersistentData import PERSISTENT_DATA
-from .Symbols import SYMBOLS
+from .StorageKeeper import StorageKeeper
+from .PersistentData import PersistentData
+from .Symbols import Symbols
