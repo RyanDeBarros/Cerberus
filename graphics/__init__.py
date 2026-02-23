@@ -1,3 +1,4 @@
+from .DynamicList import *
 from .AbstractTab import AbstractTab
 from .TextArea import TextArea
 from .FileTab import FileTab

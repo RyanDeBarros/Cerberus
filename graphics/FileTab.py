@@ -46,6 +46,7 @@ class FileTab(AbstractTab):
 			self.set_asterisk(False)
 			self.filepath.write_text(self.text_edit.toPlainText())
 
+	@override
 	def load(self):
 		if self.filepath is not None:
 			self.text_edit.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings

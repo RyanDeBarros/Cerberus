@@ -33,6 +33,10 @@ class AbstractTab(QWidget, metaclass=AbstractTabMeta):
 		return filename if not self.asterisk else f"* {filename}"
 
 	@abstractmethod
+	def load(self) -> None:
+		pass
+
+	@abstractmethod
 	def on_save(self) -> None:
 		pass
 

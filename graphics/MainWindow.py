@@ -118,8 +118,8 @@ class MainWindow(QMainWindow):
 			self.get_file_tab().move_file()
 
 	def reload_file(self):
-		if self.on_file_tab():
-			self.get_file_tab().load()
+		if self.has_tab():
+			self.get_tab(None).load()
 
 	def delete_file(self):
 		if self.on_file_tab() and self.get_file_tab().on_delete():

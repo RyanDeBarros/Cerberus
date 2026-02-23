@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from pathlib import Path
 
-# TODO(1) app settings to configure Symbols
+
 @dataclass
 class Symbols:
 	whitespace = [' ', '\t', '\r', '\n']

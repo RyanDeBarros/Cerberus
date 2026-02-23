@@ -23,10 +23,6 @@ class EditorTab(AbstractTab):
 			self.dump()
 
 	@abstractmethod
-	def load(self):
-		pass
-
-	@abstractmethod
 	def dump(self):
 		pass
 
