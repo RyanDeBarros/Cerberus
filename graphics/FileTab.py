@@ -65,12 +65,11 @@ class FileTab(AbstractTab):
 	def load(self):
 		if self.filepath is not None:
 			if self.filepath.exists():
-				self.text_edit.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
+				self.text_area.set_text(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
 				self.set_asterisk(False)
 				self.focus()
-				# TODO(1) can't undo to before load(). replace use of setPlainText using TextArea
 			else:
-				pass  # TODO(2)
+				pass  # TODO(2) handle case?
 
 	@override
 	def raw_tabname(self):
@@ -113,7 +112,7 @@ class FileTab(AbstractTab):
 		else:
 			return False
 
-	# TODO(1) Call check_for_external_change using some kind of watchdog system or simply a separate thread with a timer.
+	# TODO(1) Call check_for_external_change using some kind of watchdog system or simply a separate thread with a timer *while tab is focused*.
 	def check_for_external_change(self, from_focus: bool):
 		if self.filepath is None or not AppContext.main_window().tab_is_selected(self):
 			return

@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QObject, QEvent
-from PySide6.QtGui import QKeyEvent
+from PySide6.QtGui import QKeyEvent, QTextCursor
 from PySide6.QtWidgets import QPlainTextEdit
 
 from processing import Selection
@@ -65,6 +65,15 @@ class TextArea:
 	def __init__(self, text_edit: QPlainTextEdit):
 		self.text_edit = text_edit
 		self.filter = UndoRedoFilter(self.text_edit, self.selection, self.set_selection)
+
+	def set_text(self, text):
+		self.filter.on_text_operated()
+		cursor = self.text_edit.textCursor()
+		cursor.beginEditBlock()
+		cursor.select(QTextCursor.SelectionType.Document)
+		cursor.removeSelectedText()
+		cursor.insertText(text)
+		cursor.endEditBlock()
 
 	def insert_text(self, text):
 		self.filter.on_text_operated()
