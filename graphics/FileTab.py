@@ -39,12 +39,20 @@ class FileTab(AbstractTab):
 
 	@override
 	def on_save(self):
-		if self.filepath is None and not self._init_filepath():
-			return
+		if self.filepath is None:
+			filename = AppContext.persistent().get_save_filename(self)
+			if not filename:
+				return
+
+			self.filepath = Path(filename).resolve()
+			self._on_filepath_changed()
+			self._set_tab_text()
+
+			# TODO(1) if overwriting an existing file (whether here or through some other action): check if that file is already open in Cerberus. If it is, then once that tab is focused, popup options to reload file or keep text content as unsaved changes. In fact, cache the last modified timestamp of currently open files so as to execute this popup when that timestamp changes (can be some kind of watchdog system or simply a separate thread that checks timestamps on a timer).
 
 		if self.asterisk:
 			self.set_asterisk(False)
-			self.filepath.write_text(self.text_edit.toPlainText())
+			self._save_to(self.filepath)
 
 	@override
 	def load(self):
@@ -56,16 +64,8 @@ class FileTab(AbstractTab):
 	def raw_tabname(self):
 		return self.filepath.name if self.filepath else "Untitled"
 
-	def _init_filepath(self):
-		filename = AppContext.persistent().get_save_filename(self)
-		if filename and filename != self.filepath:
-			self.filepath = Path(filename).resolve()
-			self._on_filepath_changed()
-			self._set_tab_text()
-			return True
-		else:
-			return False
-		# TODO(1) if overwriting an existing file (whether here or through some other action): check if that file is already open in Cerberus. If it is, then once that tab is focused, popup options to reload file or keep text content as unsaved changes. In fact, cache the last modified timestamp of currently open files so as to execute this popup when that timestamp changes (can be some kind of watchdog system or simply a separate thread that checks timestamps on a timer).
+	def file_modified_timestamp(self) -> int | None:
+		return self.filepath.stat().st_mtime if self.filepath and self.filepath.exists() else None
 
 	def move_file(self):
 		filename = AppContext.persistent().get_save_filename(self)
@@ -83,7 +83,10 @@ class FileTab(AbstractTab):
 	def save_copy(self):
 		filename = AppContext.persistent().get_save_filename(self)
 		if filename:
-			Path(filename).resolve().write_text(self.text_edit.toPlainText())
+			self._save_to(Path(filename))
+
+	def _save_to(self, file: Path):
+		file.write_text(self.text_edit.toPlainText())
 
 	def on_delete(self):
 		mbox = QMessageBox(QMessageBox.Icon.Warning, "Confirm Delete File", f"Are you sure you want to delete {self.filepath if self.filepath else "Untitled"}?")

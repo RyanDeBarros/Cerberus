@@ -158,7 +158,7 @@ class TextIterator:
 	def distance_to_next_subword(self, early_exit: EarlyExit | None = None) -> int:
 		base = self.index
 		self.index += self.right_subword_len()
-		while self.valid() and not self.is_word_char() and not early_exit():
+		while self.valid() and not self.is_word_char() and (early_exit is None or not early_exit()):
 			self.index += 1
 		distance = self.index - base
 		self.index = base

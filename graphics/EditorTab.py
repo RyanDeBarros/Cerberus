@@ -75,7 +75,7 @@ class EditorTab(AbstractTab):
 		if not modified:
 			return
 
-		if op:
+		if op is not None:
 			op(new_strings)
 
 		setattr(self.scratch_data(), name, new_strings)
@@ -88,7 +88,7 @@ class EditorTab(AbstractTab):
 		if not modified:
 			return
 
-		if op:
+		if op is not None:
 			op(new_strings)
 		new_strings = set(new_strings)
 

@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 
 	# TODO(2) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
+	# TODO(1) Ctrl+arrows to scroll text. Similar key shortcuts for duplicate line, select line/word, delete line, etc. (like IDEs + vim controls)
 
 	def on_tab_context_menu(self, pos):
 		index = self.ui.tabWidget.tabBar().tabAt(pos)
@@ -107,8 +108,14 @@ class MainWindow(QMainWindow):
 	def add_tab(self, filepath: Path | str | None):
 		if isinstance(filepath, str):
 			filepath = Path(filepath).resolve()
-		tab = FileTab(filepath)
-		self.ui.tabWidget.addTab(tab, tab.tabname())
+
+		tab = None
+		if filepath is not None:
+			tab = self.get_existing_file_tab(filepath)
+		if tab is None:
+			tab = FileTab(filepath)
+			self.ui.tabWidget.addTab(tab, tab.tabname())
+
 		self.ui.tabWidget.setCurrentWidget(tab)
 		tab.on_added()
 		tab.focus_text()
@@ -159,11 +166,18 @@ class MainWindow(QMainWindow):
 				except FileNotFoundError:
 					subprocess.run(["xdg-open", str(path.parent)])
 
+	def close_tab(self, pos):
+		if self.get_tab(pos).on_close():
+			self.ui.tabWidget.removeTab(pos)
+
+	def open_symbols_settings(self):
+		self.symbols_tab.open(self.ui.tabWidget)
+
 	def has_tab(self):
 		return self.ui.tabWidget.count() > 0
 
 	def get_tab(self, pos: int | None) -> AbstractTab:
-		return self.ui.tabWidget.widget(pos) if pos else self.ui.tabWidget.currentWidget()
+		return self.ui.tabWidget.widget(pos) if pos is not None else self.ui.tabWidget.currentWidget()
 
 	def on_file_tab(self) -> bool:
 		return self.has_tab() and isinstance(self.ui.tabWidget.currentWidget(), FileTab)
@@ -171,9 +185,9 @@ class MainWindow(QMainWindow):
 	def get_file_tab(self) -> FileTab:
 		return self.ui.tabWidget.currentWidget()
 
-	def close_tab(self, pos):
-		if self.get_tab(pos).on_close():
-			self.ui.tabWidget.removeTab(pos)
-
-	def open_symbols_settings(self):
-		self.symbols_tab.open(self.ui.tabWidget)
+	def get_existing_file_tab(self, filepath: Path) -> FileTab | None:
+		for i in range(self.ui.tabWidget.count()):
+			tab = self.get_tab(i)
+			if isinstance(tab, FileTab) and tab.filepath == filepath:
+				return tab
+		return None
