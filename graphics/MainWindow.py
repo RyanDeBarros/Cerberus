@@ -2,8 +2,8 @@ import platform
 import subprocess
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QShortcut, QKeySequence, QKeyEvent
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
 
 import AppContext
@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
 
 		self.ui.tabWidget.removeTab(0)
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
+		self.ui.tabWidget.currentChanged.connect(self.tab_changed)
 
 	# TODO(2) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
 	# TODO(1) Ctrl+arrows to scroll text. Similar key shortcuts for duplicate line, select line/word, delete line, etc. (like IDEs + vim controls)
@@ -118,7 +119,7 @@ class MainWindow(QMainWindow):
 
 		self.ui.tabWidget.setCurrentWidget(tab)
 		tab.on_added()
-		tab.focus_text()
+		tab.focus()
 
 	def move_file(self):
 		if self.on_file_tab():
@@ -170,6 +171,23 @@ class MainWindow(QMainWindow):
 		if self.get_tab(pos).on_close():
 			self.ui.tabWidget.removeTab(pos)
 
+	def tab_changed(self, pos):
+		tab = self.get_tab(pos)
+		if isinstance(tab, FileTab):
+			tab.check_for_external_change(from_focus=True)
+
+	def changeEvent(self, event):
+		if event.type() == QEvent.Type.ActivationChange and self.isActiveWindow():
+			event.accept()
+			if self.has_tab():
+				self.tab_changed(self.ui.tabWidget.currentIndex())
+		super().changeEvent(event)
+
+	def closeEvent(self, event):
+		for _ in range(self.ui.tabWidget.count()):
+			self.close_tab(0)
+		super().closeEvent(event)
+
 	def open_symbols_settings(self):
 		self.symbols_tab.open(self.ui.tabWidget)
 
@@ -178,6 +196,9 @@ class MainWindow(QMainWindow):
 
 	def get_tab(self, pos: int | None) -> AbstractTab:
 		return self.ui.tabWidget.widget(pos) if pos is not None else self.ui.tabWidget.currentWidget()
+
+	def tab_is_selected(self, tab: AbstractTab):
+		return self.ui.tabWidget.currentWidget() == tab
 
 	def on_file_tab(self) -> bool:
 		return self.has_tab() and isinstance(self.ui.tabWidget.currentWidget(), FileTab)

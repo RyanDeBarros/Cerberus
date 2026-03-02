@@ -12,6 +12,12 @@ class FileTab(AbstractTab):
 	def __init__(self, filepath: Path | None):
 		super().__init__()
 		self.filepath = filepath
+		if self.filepath is not None and self.filepath.exists():
+			self.timestamp = self.file_modified_timestamp()
+		else:
+			self.timestamp = -1
+		self.popup_no_exist = True
+		self.external_timestamp: int | None = None
 
 		self.vertical_layout = QVBoxLayout(self)
 		self.text_edit = QPlainTextEdit()
@@ -21,7 +27,7 @@ class FileTab(AbstractTab):
 
 		self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 		self.load()
-		self.focus_text()
+		self.focus()
 
 	def on_added(self):
 		self._on_filepath_changed()
@@ -30,7 +36,8 @@ class FileTab(AbstractTab):
 		fullpath = self.filepath.as_posix() if self.filepath else "Untitled"
 		self.setToolTip(fullpath if not self.asterisk else f"* {fullpath}")
 
-	def focus_text(self):
+	def focus(self):
+		self.check_for_external_change(from_focus=True)
 		self.text_edit.setFocus()
 
 	def text_changed(self):
@@ -47,18 +54,23 @@ class FileTab(AbstractTab):
 			self.filepath = Path(filename).resolve()
 			self._on_filepath_changed()
 			self._set_tab_text()
-
-			# TODO(1) if overwriting an existing file (whether here or through some other action): check if that file is already open in Cerberus. If it is, then once that tab is focused, popup options to reload file or keep text content as unsaved changes. In fact, cache the last modified timestamp of currently open files so as to execute this popup when that timestamp changes (can be some kind of watchdog system or simply a separate thread that checks timestamps on a timer).
+			self.timestamp = self.file_modified_timestamp()
 
 		if self.asterisk:
+			self.check_for_external_change(from_focus=False)
 			self.set_asterisk(False)
 			self._save_to(self.filepath)
 
 	@override
 	def load(self):
 		if self.filepath is not None:
-			self.text_edit.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
-			self.set_asterisk(False)
+			if self.filepath.exists():
+				self.text_edit.setPlainText(self.filepath.read_text())  # TODO(2) don't open if file is too big - set maximum in settings
+				self.set_asterisk(False)
+				self.focus()
+				# TODO(1) can't undo to before load(). replace use of setPlainText using TextArea
+			else:
+				pass  # TODO(2)
 
 	@override
 	def raw_tabname(self):
@@ -95,8 +107,39 @@ class FileTab(AbstractTab):
 		mbox.setDefaultButton(cancel)
 		mbox.exec()
 		if mbox.clickedButton() == yes:
-			if self.filepath:
+			if self.filepath and self.filepath.exists():
 				self.filepath.unlink()
 			return True
 		else:
 			return False
+
+	# TODO(1) Call check_for_external_change using some kind of watchdog system or simply a separate thread with a timer.
+	def check_for_external_change(self, from_focus: bool):
+		if self.filepath is None or not AppContext.main_window().tab_is_selected(self):
+			return
+
+		file_modified_timestamp = self.file_modified_timestamp()
+		if not self.filepath.exists():
+			if from_focus and self.popup_no_exist:
+				mbox = QMessageBox(QMessageBox.Icon.Information, "File doesn't exist", f"{self.filepath} was removed externally, and no longer exists.")
+				mbox.exec()
+				self.popup_no_exist = False
+			self.set_asterisk(True)
+			self.external_timestamp = None
+		elif file_modified_timestamp > self.timestamp or (self.external_timestamp is not None and file_modified_timestamp > self.external_timestamp):
+			self.popup_no_exist = True
+			if self.external_timestamp is None or file_modified_timestamp > self.external_timestamp:
+				self.external_timestamp = file_modified_timestamp
+
+				mbox = QMessageBox(QMessageBox.Icon.Question, "File was modified externally", f"{self.filepath} was modified externally - what should Cerberus do?")
+				reload = mbox.addButton("Reload from disk", QMessageBox.ButtonRole.ApplyRole)
+				keep_changes = mbox.addButton("Keep unsaved changes", QMessageBox.ButtonRole.RejectRole)
+				mbox.setDefaultButton(keep_changes)
+				mbox.exec()
+				if mbox.clickedButton() == reload:
+					self.load()
+				else:
+					self.set_asterisk(True)
+		else:
+			self.popup_no_exist = True
+			self.external_timestamp = None
