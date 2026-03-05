@@ -2,12 +2,12 @@ import platform
 import subprocess
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QEvent
-from PySide6.QtGui import QShortcut, QKeySequence, QKeyEvent
+from PySide6.QtCore import Qt, QEvent, QThread
+from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
 
 import AppContext
-from graphics import FileTab, AbstractTab, SymbolsTab
+from graphics import FileTab, AbstractTab, SymbolsTab, Worker
 from ui import Ui_MainWindow
 
 
@@ -20,6 +20,13 @@ class MainWindow(QMainWindow):
 
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+		self.watcher_thread = QThread(self)
+		self.watcher_worker = Worker(func=self.check_for_external_changes, interval_ms=1000)
+		self.watcher_worker.moveToThread(self.watcher_thread)
+		self.watcher_thread.started.connect(self.watcher_worker.start)
+		self.watcher_thread.finished.connect(self.watcher_worker.deleteLater)
+		self.watcher_thread.start()
 
 		# ------------
 		# --- File ---
@@ -181,11 +188,17 @@ class MainWindow(QMainWindow):
 			event.accept()
 			if self.has_tab():
 				self.tab_changed(self.ui.tabWidget.currentIndex())
+
 		super().changeEvent(event)
 
 	def closeEvent(self, event):
 		for _ in range(self.ui.tabWidget.count()):
 			self.close_tab(0)
+
+		self.watcher_worker.stop()
+		self.watcher_thread.quit()
+		self.watcher_thread.wait()
+
 		super().closeEvent(event)
 
 	def open_symbols_settings(self):
@@ -212,3 +225,10 @@ class MainWindow(QMainWindow):
 			if isinstance(tab, FileTab) and tab.filepath == filepath:
 				return tab
 		return None
+
+	def check_for_external_changes(self):
+		if not self.isActiveWindow():
+			return
+
+		if self.on_file_tab():
+			self.get_file_tab().check_for_external_change(from_focus=True)

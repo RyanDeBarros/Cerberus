@@ -98,6 +98,7 @@ class FileTab(AbstractTab):
 
 	def _save_to(self, file: Path):
 		file.write_text(self.text_edit.toPlainText())
+		self.timestamp = self.file_modified_timestamp()
 
 	def on_delete(self):
 		mbox = QMessageBox(QMessageBox.Icon.Warning, "Confirm Delete File", f"Are you sure you want to delete {self.filepath if self.filepath else "Untitled"}?")
@@ -112,7 +113,6 @@ class FileTab(AbstractTab):
 		else:
 			return False
 
-	# TODO(1) Call check_for_external_change using some kind of watchdog system or simply a separate thread with a timer *while tab is focused*.
 	def check_for_external_change(self, from_focus: bool):
 		if self.filepath is None or not AppContext.main_window().tab_is_selected(self):
 			return
