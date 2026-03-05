@@ -8,27 +8,27 @@ if TYPE_CHECKING:
 	from storage import Symbols
 	from storage import PersistentData
 
-MAIN_WINDOW: Optional["MainWindow"] = None
-PERSISTENT_DATA: Optional["PersistentData"] = None
+_MAIN_WINDOW: Optional["MainWindow"] = None
+_PERSISTENT_DATA: Optional["PersistentData"] = None
 
 
 def run_app():
 	app = QApplication([])
 
 	from graphics import MainWindow
-	global MAIN_WINDOW
-	MAIN_WINDOW = MainWindow()
+	global _MAIN_WINDOW
+	_MAIN_WINDOW = MainWindow()
 
 	from storage import PersistentData
-	global PERSISTENT_DATA
-	PERSISTENT_DATA = PersistentData()
+	global _PERSISTENT_DATA
+	_PERSISTENT_DATA = PersistentData()
 
-	MAIN_WINDOW.show()
+	_MAIN_WINDOW.show()
 	app.exec()
 
 
 def main_window() -> "MainWindow":
-	return MAIN_WINDOW
+	return _MAIN_WINDOW
 
 
 def text_area() -> "TextArea":
@@ -40,4 +40,4 @@ def symbols() -> "Symbols":
 
 
 def persistent() -> "PersistentData":
-	return PERSISTENT_DATA
+	return _PERSISTENT_DATA

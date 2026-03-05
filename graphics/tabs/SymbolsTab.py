@@ -1,8 +1,9 @@
+from pathlib import Path
 from typing import override
 
 from graphics import EditorTab
 
-from storage import StorageKeeper, Symbols
+from storage import StorageKeeper, Symbols, FileSystemLocator
 from ui import Ui_SymbolsSettings
 
 
@@ -21,7 +22,7 @@ class SymbolsTab(EditorTab):
 		self.storage = StorageKeeper(self.symbols, [
 			STRINGS.sentence_enders,
 			STRINGS.lowercase_nontitle_words,
-		], 'symbols.toml')
+		], FileSystemLocator.SETTINGS_PATH / 'symbols.toml', FileSystemLocator.DEFAULTS_PATH / 'symbols.toml')
 		self.load()
 
 		self.ui = Ui_SymbolsSettings()

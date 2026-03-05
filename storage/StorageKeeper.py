@@ -4,15 +4,16 @@ import toml
 
 
 class StorageKeeper:
-	def __init__(self, obj, names: list[str], filename: str):
+	def __init__(self, obj, names: list[str], filepath: Path, defaults_path: Path | None):
 		self.obj = obj
 		self.names = names
-		self.path = Path('data').resolve() / filename  # TODO(1) use app data path
+		self.path = filepath
 
-		self.default_path = Path('default_data').resolve() / filename
-		assert self.default_path.exists()
-		with open(self.default_path, 'r') as f:
-			self.defaults = toml.load(f)
+		self.defaults = {}
+		if defaults_path is not None:
+			assert defaults_path.exists()
+			with open(defaults_path, 'r') as f:
+				self.defaults = toml.load(f)
 
 	def load(self):
 		if self.path.exists():

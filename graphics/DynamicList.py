@@ -1,6 +1,7 @@
 from PySide6.QtCore import QStringListModel
-from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 
+import AppContext
 from ui import Ui_DynamicList
 
 
@@ -40,7 +41,7 @@ class DynamicStringList(QWidget):
 
 	@staticmethod
 	def dialog(items: list[str]):
-		dlg = QDialog()
+		dlg = AppContext.main_window().dialog()
 		layout = QVBoxLayout(dlg)
 		strings = DynamicStringList(items)
 		layout.addWidget(strings)

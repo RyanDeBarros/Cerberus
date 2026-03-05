@@ -1,7 +1,9 @@
 import os
+from pathlib import Path
 
 from PySide6.QtWidgets import QFileDialog, QWidget
 
+from . import FileSystemLocator
 from .StorageKeeper import StorageKeeper
 
 class PersistentData:
@@ -10,7 +12,7 @@ class PersistentData:
 	def __init__(self):
 		self.storage = StorageKeeper(self, [
 			"file_dialog_dir",
-		], 'persistent.toml')
+		], FileSystemLocator.PERSISTENT_PATH / 'persistent.toml', FileSystemLocator.DEFAULTS_PATH / 'persistent.toml')
 		self.storage.load()
 
 	def get_open_filenames(self, widget: QWidget, ext_filter: str = "Text Files (*.txt *.md *.log);; All Files (*)"):

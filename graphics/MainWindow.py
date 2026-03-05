@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, QEvent, QThread
 from PySide6.QtGui import QShortcut, QKeySequence
-from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu
+from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu, QDialog
 
 import AppContext
 from graphics import FileTab, AbstractTab, SymbolsTab, Worker
@@ -224,6 +224,11 @@ class MainWindow(QMainWindow):
 			if isinstance(tab, FileTab) and tab.filepath == filepath:
 				return tab
 		return None
+
+	def dialog(self):
+		dlg = QDialog(self)
+		dlg.setWindowTitle("Cerberus")
+		return dlg
 
 	def check_for_external_changes(self):
 		if not self.isActiveWindow():
