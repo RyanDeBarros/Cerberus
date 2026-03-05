@@ -70,7 +70,7 @@ class FileTab(AbstractTab):
 				self.set_asterisk(False)
 				self.focus()
 			else:
-				pass  # TODO(2) handle case?
+				pass  # TODO(2) handle case? use internal log to log program errors
 
 	@override
 	def raw_tabname(self):

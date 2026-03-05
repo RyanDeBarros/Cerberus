@@ -28,4 +28,4 @@ class ControlMap(QObject):
 			return False
 		return True
 
-# TODO(2) Other key shortcuts for duplicate line, select line/word, delete line, etc. (like IDEs + vim controls)
+# TODO(3) Other key shortcuts for duplicate line, select line/word, delete line, etc. (like IDEs + vim controls)

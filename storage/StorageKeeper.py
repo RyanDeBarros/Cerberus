@@ -7,7 +7,7 @@ class StorageKeeper:
 	def __init__(self, obj, names: list[str], filename: str):
 		self.obj = obj
 		self.names = names
-		self.path = Path('data').resolve() / filename  # TODO(3) use app data path
+		self.path = Path('data').resolve() / filename  # TODO(1) use app data path
 
 		self.default_path = Path('default_data').resolve() / filename
 		assert self.default_path.exists()

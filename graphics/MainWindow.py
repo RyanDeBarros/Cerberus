@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 		self.ui.tabWidget.currentChanged.connect(self.tab_changed)
 
-	# TODO(2) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
+	# TODO(1) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
 
 	def on_tab_context_menu(self, pos):
 		index = self.ui.tabWidget.tabBar().tabAt(pos)
