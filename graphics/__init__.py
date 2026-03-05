@@ -2,6 +2,7 @@ from .RevertButton import RevertButton
 from .DynamicList import *
 from .AbstractTab import AbstractTab
 from .TextArea import TextArea
+from .ControlMap import ControlMap
 from .FileTab import FileTab
 from .EditorTab import EditorTab
 from .Worker import Worker

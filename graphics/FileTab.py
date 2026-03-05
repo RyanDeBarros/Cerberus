@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QPlainTextEdit, QMessageBox
 
 import AppContext
-from graphics import TextArea, AbstractTab
+from graphics import TextArea, AbstractTab, ControlMap
 
 
 class FileTab(AbstractTab):
@@ -24,6 +24,7 @@ class FileTab(AbstractTab):
 		self.vertical_layout.addWidget(self.text_edit)
 		self.text_edit.textChanged.connect(self.text_changed)
 		self.text_area = TextArea(self.text_edit)
+		self.controls = ControlMap(self.text_area)
 
 		self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 		self.load()
