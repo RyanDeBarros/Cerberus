@@ -12,7 +12,7 @@ class UndoRedoFilter(QObject):
 		self.text_edit.installEventFilter(self)
 		self.get_cursor = get_cursor
 		self.set_cursor = set_cursor
-		self.undo_selections: list[Selection] = [get_cursor()]
+		self.undo_selections: list[Selection] = [self.get_cursor()]
 		self.redo_selections: list[Selection] = []
 
 		self.can_undo = False
@@ -60,6 +60,10 @@ class UndoRedoFilter(QObject):
 		self.redo_selections.clear()
 		self.undo_selections.append(self.get_cursor())
 
+	def reset_history(self):
+		self.undo_selections = [self.get_cursor()]
+		self.redo_selections.clear()
+
 
 class TextArea:
 	def __init__(self, text_edit: QPlainTextEdit):
@@ -74,6 +78,10 @@ class TextArea:
 		cursor.removeSelectedText()
 		cursor.insertText(text)
 		cursor.endEditBlock()
+
+	def reset_text(self, text: str):
+		self.text_edit.setPlainText(text)
+		self.filter.reset_history()
 
 	def insert_text(self, text):
 		self.filter.on_text_operated()

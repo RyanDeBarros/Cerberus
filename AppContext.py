@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 	from graphics import MainWindow
 	from storage import Symbols
 	from storage import PersistentData
+	from storage import TabsCache
 
 _MAIN_WINDOW: Optional["MainWindow"] = None
 _PERSISTENT_DATA: Optional["PersistentData"] = None
@@ -18,6 +19,7 @@ def run_app():
 	from graphics import MainWindow
 	global _MAIN_WINDOW
 	_MAIN_WINDOW = MainWindow()
+	_MAIN_WINDOW.startup()
 
 	from storage import PersistentData
 	global _PERSISTENT_DATA
@@ -35,9 +37,14 @@ def text_area() -> "TextArea":
 	return main_window().get_file_tab().text_area
 
 
+def persistent() -> "PersistentData":
+	return _PERSISTENT_DATA
+
+
+def tabs_cache() -> "TabsCache":
+	return main_window().tabs_cache
+
+
 def symbols() -> "Symbols":
 	return main_window().symbols_tab.symbols
 
-
-def persistent() -> "PersistentData":
-	return _PERSISTENT_DATA

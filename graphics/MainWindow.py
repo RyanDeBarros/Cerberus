@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu, QDialog
 
 import AppContext
 from graphics import FileTab, AbstractTab, SymbolsTab, Worker
+from storage import TabsCache
 from ui import Ui_MainWindow
 
 
@@ -17,17 +18,29 @@ class MainWindow(QMainWindow):
 
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
+		self.connect_ui()
+
+		self.symbols_tab = SymbolsTab()
 
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+		self.ui.tabWidget.tabBar().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+		self.ui.tabWidget.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
+
+		self.ui.tabWidget.removeTab(0)
+		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
+		self.ui.tabWidget.currentChanged.connect(self.tab_changed)
+
+		self.tabs_cache = TabsCache()
 
 		self.watcher_thread = QThread(self)
 		self.watcher_worker = Worker(func=self.check_for_external_changes, interval_ms=1000)
 		self.watcher_worker.moveToThread(self.watcher_thread)
 		self.watcher_thread.started.connect(self.watcher_worker.start)
 		self.watcher_thread.finished.connect(self.watcher_worker.deleteLater)
-		self.watcher_thread.start()
 
+	def connect_ui(self):
 		# ------------
 		# --- File ---
 		# ------------
@@ -67,17 +80,11 @@ class MainWindow(QMainWindow):
 		# ----------------
 		# --- Settings ---
 		# ----------------
-		self.symbols_tab = SymbolsTab()
 		self.ui.settingsSymbols.clicked.connect(self.open_symbols_settings)
 
-		self.ui.tabWidget.tabBar().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-		self.ui.tabWidget.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
-
-		self.ui.tabWidget.removeTab(0)
-		self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
-		self.ui.tabWidget.currentChanged.connect(self.tab_changed)
-
-	# TODO(1) upon quitting application, cache the tabs that are currently open and their buffers (don't check on_close(), just cache unsaved edits for when the app is re-opened). Probable edges cases with cache when multiple instances of Cerberus are running.
+	def startup(self):
+		self.tabs_cache.load_and_clear()
+		self.watcher_thread.start()
 
 	def on_tab_context_menu(self, pos):
 		index = self.ui.tabWidget.tabBar().tabAt(pos)
@@ -116,11 +123,15 @@ class MainWindow(QMainWindow):
 		if isinstance(filepath, str):
 			filepath = Path(filepath).resolve()
 
-		tab = None
-		if filepath is not None:
-			tab = self.get_existing_file_tab(filepath)
-		if tab is None:
-			tab = FileTab(filepath)
+		tab = self.get_existing_file_tab(filepath) if filepath is not None else None
+		if tab is not None:
+			self.add_file_tab(tab, add_to_ui=False)
+		else:
+			self.add_file_tab(FileTab(filepath), add_to_ui=True)
+
+	def add_file_tab(self, tab: FileTab, add_to_ui):
+		self.ui.tabWidget.addTab(tab, tab.tabname())
+		if add_to_ui:
 			self.ui.tabWidget.addTab(tab, tab.tabname())
 
 		self.ui.tabWidget.setCurrentWidget(tab)
@@ -192,7 +203,8 @@ class MainWindow(QMainWindow):
 
 	def closeEvent(self, event):
 		for _ in range(self.ui.tabWidget.count()):
-			self.close_tab(0)
+			self.get_tab(0).on_app_close()  # TODO(1) user setting to switch between on_app_close() and regular on_close() on app close. In the latter case, will still need to cache opened tabs, just with the popup on unsaved edits.
+			self.ui.tabWidget.removeTab(0)
 
 		self.watcher_worker.stop()
 		self.watcher_thread.quit()

@@ -1,10 +1,10 @@
 import os
-from pathlib import Path
 
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from . import FileSystemLocator
 from .StorageKeeper import StorageKeeper
+
 
 class PersistentData:
 	file_dialog_dir: str = ""

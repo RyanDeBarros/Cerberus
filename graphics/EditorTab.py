@@ -43,6 +43,10 @@ class EditorTab(AbstractTab):
 		else:
 			return False
 
+	@override
+	def on_app_close(self):
+		self.close()
+
 	@abstractmethod
 	def storage_keeper(self) -> StorageKeeper:
 		pass

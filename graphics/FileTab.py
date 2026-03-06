@@ -8,6 +8,7 @@ import AppContext
 from graphics import TextArea, AbstractTab, ControlMap
 
 
+# TODO(2) if completely undo the undo-stack, asterisk should be set back to false
 class FileTab(AbstractTab):
 	def __init__(self, filepath: Path | None):
 		super().__init__()
@@ -60,7 +61,7 @@ class FileTab(AbstractTab):
 		if self.asterisk:
 			self.check_for_external_change(from_focus=False)
 			self.set_asterisk(False)
-			self._save_to(self.filepath)
+			self.save_to(self.filepath)
 
 	@override
 	def load(self):
@@ -71,6 +72,10 @@ class FileTab(AbstractTab):
 				self.focus()
 			else:
 				pass  # TODO(2) handle case? use internal log to log program errors
+
+	def force_load(self, buffer: str):
+		self.text_area.reset_text(buffer)
+		self.focus()
 
 	@override
 	def raw_tabname(self):
@@ -95,9 +100,9 @@ class FileTab(AbstractTab):
 	def save_copy(self):
 		filename = AppContext.persistent().get_save_filename(self)
 		if filename:
-			self._save_to(Path(filename))
+			self.save_to(Path(filename))
 
-	def _save_to(self, file: Path):
+	def save_to(self, file: Path):
 		file.write_text(self.text_edit.toPlainText())
 		self.timestamp = self.file_modified_timestamp()
 
@@ -143,3 +148,7 @@ class FileTab(AbstractTab):
 		else:
 			self.popup_no_exist = True
 			self.external_timestamp = None
+
+	@override
+	def on_app_close(self):
+		AppContext.tabs_cache().cache_tab(self)

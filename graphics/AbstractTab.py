@@ -57,3 +57,7 @@ class AbstractTab(QWidget, metaclass=AbstractTabMeta):
 		elif mbox.clickedButton() == cancel:
 			return False
 		return True
+
+	@abstractmethod
+	def on_app_close(self):
+		pass
