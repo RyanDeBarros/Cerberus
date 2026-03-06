@@ -116,6 +116,10 @@ class MainWindow(QMainWindow):
 
 	def open_file(self):
 		filenames = AppContext.persistent().get_open_filenames(self)
+		if len(filenames) > 0 and self.has_tab():
+			tab = self.get_tab(None)
+			if isinstance(tab, FileTab) and tab.filepath is None and not tab.asterisk:
+				self.close_tab(self.ui.tabWidget.currentIndex())
 		for file in filenames:
 			self.add_tab(file)
 
