@@ -1,15 +1,28 @@
-from pathlib import Path
+from dataclasses import dataclass, field
 from typing import override
 
 from graphics import EditorTab
 
-from storage import StorageKeeper, Symbols, FileSystemLocator
+from storage import StorageKeeper, FileSystemLocator
 from ui import Ui_SymbolsSettings
+
+
+@dataclass
+class Symbols:
+	whitespace: set[str] = field(default_factory=lambda: {' ', '\t', '\r', '\n'})
+	sentence_enders: set[str] = field(default_factory=lambda: {'.', '!', '?'})
+	lowercase_word_characters: set[str] = field(
+		default_factory=lambda: {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2',
+								 '3', '4', '5', '6', '7', '8', '9', '_'})
+	lowercase_nontitle_words: set[str] = field(default_factory=lambda: {'a', 'an', 'in', 'is', 'it', 'of', 'on', 'to', 'the'})
+	lowercase_alphabet: set[str] = field(
+		default_factory=lambda: {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'})
 
 
 class Strings:
 	sentence_enders = "sentence_enders"
 	lowercase_nontitle_words = "lowercase_nontitle_words"
+
 
 STRINGS = Strings()
 
@@ -23,25 +36,16 @@ class SymbolsTab(EditorTab):
 			STRINGS.sentence_enders,
 			STRINGS.lowercase_nontitle_words,
 		], FileSystemLocator.SETTINGS_PATH / 'symbols.toml', FileSystemLocator.DEFAULTS_PATH / 'symbols.toml')
-		self.load()
 
 		self.ui = Ui_SymbolsSettings()
 		self.ui.setupUi(self)
 
 		self.ui.openSentenceEnders.clicked.connect(self.open_sentence_enders)
-		self.rvtSentenceEnders = self.revert_button(self.ui.revertSentenceEnders, STRINGS.sentence_enders)
+		self.revert_sentence_enders = self.revert_button(self.ui.revertSentenceEnders, STRINGS.sentence_enders)
 		self.ui.openNonTitleWords.clicked.connect(self.open_non_title_words)
-		self.rvtNonTitleWords = self.revert_button(self.ui.revertNonTitleWords, STRINGS.lowercase_nontitle_words)
+		self.revert_non_title_words = self.revert_button(self.ui.revertNonTitleWords, STRINGS.lowercase_nontitle_words)
 
-	@override
-	def load(self):
-		self.storage.load()
-		self.storage.dump_to(self.scratch_symbols)
-
-	@override
-	def dump(self):
-		self.storage.load_from(self.scratch_symbols)
-		self.storage.dump()
+		self.load()
 
 	@override
 	def storage_keeper(self) -> StorageKeeper:
@@ -56,7 +60,7 @@ class SymbolsTab(EditorTab):
 		return self.scratch_symbols
 
 	def open_sentence_enders(self):
-		self.open_strings_set_dialog(STRINGS.sentence_enders, self.rvtSentenceEnders)
+		self.open_strings_set_dialog(STRINGS.sentence_enders, self.revert_sentence_enders)
 
 	def open_non_title_words(self):
-		self.open_strings_set_dialog(STRINGS.lowercase_nontitle_words, self.rvtNonTitleWords, self.strings_list_to_lower_op)
+		self.open_strings_set_dialog(STRINGS.lowercase_nontitle_words, self.revert_non_title_words, self.strings_list_to_lower_op)

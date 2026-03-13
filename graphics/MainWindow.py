@@ -7,7 +7,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QScrollArea, QMenu, QDialog
 
 import AppContext
-from graphics import FileTab, AbstractTab, SymbolsTab, Worker
+from graphics import FileTab, AbstractTab, SymbolsTab, Worker, UserPreferencesTab
 from storage import TabsCache
 from ui import Ui_MainWindow
 
@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
 		self.connect_ui()
 
 		self.symbols_tab = SymbolsTab()
+		self.user_preferences_tab = UserPreferencesTab()
 
 		for scroll in self.findChildren(QScrollArea):
 			scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -80,6 +81,7 @@ class MainWindow(QMainWindow):
 		# ----------------
 		# --- Settings ---
 		# ----------------
+		self.ui.settingsPreferences.clicked.connect(self.open_user_preferences)
 		self.ui.settingsSymbols.clicked.connect(self.open_symbols_settings)
 
 	def startup(self):
@@ -218,6 +220,9 @@ class MainWindow(QMainWindow):
 
 	def open_symbols_settings(self):
 		self.symbols_tab.open(self.ui.tabWidget)
+
+	def open_user_preferences(self):
+		self.user_preferences_tab.open(self.ui.tabWidget)
 
 	def has_tab(self):
 		return self.ui.tabWidget.count() > 0

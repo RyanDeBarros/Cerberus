@@ -3,11 +3,8 @@ from typing import TYPE_CHECKING, Optional
 from PySide6.QtWidgets import QApplication
 
 if TYPE_CHECKING:
-	from graphics import TextArea
-	from graphics import MainWindow
-	from storage import Symbols
-	from storage import PersistentData
-	from storage import TabsCache
+	from graphics import TextArea, MainWindow, Symbols
+	from storage import PersistentData, TabsCache
 
 _MAIN_WINDOW: Optional["MainWindow"] = None
 _PERSISTENT_DATA: Optional["PersistentData"] = None

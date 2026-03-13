@@ -179,8 +179,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>26</height>
+             <width>102</width>
+             <height>354</height>
             </rect>
            </property>
            <attribute name="label">
@@ -196,8 +196,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>132</height>
+         <width>120</width>
+         <height>432</height>
         </rect>
        </property>
        <attribute name="label">
@@ -214,8 +214,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>26</height>
+             <width>102</width>
+             <height>354</height>
             </rect>
            </property>
            <attribute name="label">
@@ -294,8 +294,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>26</height>
+         <width>120</width>
+         <height>432</height>
         </rect>
        </property>
        <attribute name="label">
@@ -307,8 +307,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>26</height>
+         <width>120</width>
+         <height>432</height>
         </rect>
        </property>
        <attribute name="label">
@@ -328,6 +328,13 @@
         <string>Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPushButton" name="settingsPreferences">
+          <property name="text">
+           <string>Preferences</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QPushButton" name="settingsSymbols">
           <property name="text">

@@ -23,9 +23,15 @@ class EditorTab(AbstractTab):
 			self.dump()
 			self.set_asterisk(False)
 
-	@abstractmethod
+	@override
+	def load(self):
+		self.storage_keeper().load()
+		self.storage_keeper().dump_to(self.scratch_data())
+		self.render_all_scratch_ui()  # TODO(1) also call value_changed() on all revert buttons
+
 	def dump(self):
-		pass
+		self.storage_keeper().load_from(self.scratch_data())
+		self.storage_keeper().dump()
 
 	def open(self, holder: QTabWidget):
 		if not self.opened:
@@ -49,7 +55,7 @@ class EditorTab(AbstractTab):
 
 	@abstractmethod
 	def storage_keeper(self) -> StorageKeeper:
-		pass
+		raise NotImplementedError()  # TODO(v1) use NotImplementedError() throughout pure virtual methods
 
 	@abstractmethod
 	def data(self):
@@ -71,8 +77,17 @@ class EditorTab(AbstractTab):
 		def f(value):
 			if getattr(self.scratch_data(), name) != value:
 				setattr(self.scratch_data(), name, value)
-				self.set_asterisk(True)
+				self.set_asterisk(self.data() != self.scratch_data())
+				self.render_scratch_ui(name)
 		return f
+
+	@abstractmethod
+	def render_all_scratch_ui(self):
+		pass
+
+	@abstractmethod
+	def render_scratch_ui(self, name: str):
+		pass
 
 	def open_strings_list_dialog(self, name: str, reverter: RevertButton, op: Callable[[list[str]], None] | None = None):
 		new_strings, modified = DynamicStringList.dialog(getattr(self.scratch_data(), name))
