@@ -33,7 +33,7 @@ class SubIndex(int):
 class EarlyExit(ABC):
 	@abstractmethod
 	def __call__(self) -> bool:
-		return False
+		raise NotImplementedError()
 
 
 class TextSelection:

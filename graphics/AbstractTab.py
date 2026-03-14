@@ -26,7 +26,7 @@ class AbstractTab(QWidget, metaclass=AbstractTabMeta):
 
 	@abstractmethod
 	def raw_tabname(self) -> str:
-		pass
+		raise NotImplementedError()
 
 	def tabname(self):
 		filename = self.raw_tabname()
@@ -59,5 +59,5 @@ class AbstractTab(QWidget, metaclass=AbstractTabMeta):
 		return True
 
 	@abstractmethod
-	def on_app_close(self):
+	def on_app_close(self) -> None:
 		pass

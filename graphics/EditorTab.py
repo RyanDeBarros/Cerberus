@@ -4,14 +4,17 @@ from typing import override, Callable
 from PySide6.QtWidgets import QTabWidget, QPushButton
 
 from graphics import AbstractTab, DynamicStringList, RevertButton
-from storage import StorageKeeper
+from storage import StorageKeeper, FileSystemLocator
 
 
 class EditorTab(AbstractTab):
-	def __init__(self, name: str):
+	def __init__(self, name: str, settings_filename: str):
 		super().__init__()
 		self.name = name
 		self.opened = False
+
+		self.string_attrs: list[str] = [name for name, _ in self.strings().__class__.__dict__.items() if not name.startswith("__")]
+		self.storage = StorageKeeper(self.data(), self.string_attr_vars(), FileSystemLocator.SETTINGS_PATH / settings_filename, FileSystemLocator.DEFAULTS_PATH / settings_filename)
 
 	@override
 	def raw_tabname(self) -> str:
@@ -25,13 +28,13 @@ class EditorTab(AbstractTab):
 
 	@override
 	def load(self):
-		self.storage_keeper().load()
-		self.storage_keeper().dump_to(self.scratch_data())
+		self.storage.load()
+		self.storage.dump_to(self.scratch_data())
 		self.render_all_scratch_ui()  # TODO(1) also call value_changed() on all revert buttons
 
 	def dump(self):
-		self.storage_keeper().load_from(self.scratch_data())
-		self.storage_keeper().dump()
+		self.storage.load_from(self.scratch_data())
+		self.storage.dump()
 
 	def open(self, holder: QTabWidget):
 		if not self.opened:
@@ -54,19 +57,22 @@ class EditorTab(AbstractTab):
 		self.close()
 
 	@abstractmethod
-	def storage_keeper(self) -> StorageKeeper:
-		raise NotImplementedError()  # TODO(v1) use NotImplementedError() throughout pure virtual methods
-
-	@abstractmethod
 	def data(self):
-		pass
+		raise NotImplementedError()
 
 	@abstractmethod
 	def scratch_data(self):
-		pass
+		raise NotImplementedError()
+
+	@abstractmethod
+	def strings(self):
+		raise NotImplementedError()
+
+	def string_attr_vars(self):
+		return [getattr(self.strings(), attr) for attr in self.string_attrs]
 
 	def revert_button(self, btn: QPushButton, name: str):
-		return RevertButton(btn, self.storage_keeper().get_default_attr(name), self.revert_getter(name), self.revert_setter(name))
+		return RevertButton(btn, self.storage.get_default_attr(name), self.revert_getter(name), self.revert_setter(name))
 
 	def revert_getter(self, name: str):
 		def f():
@@ -81,9 +87,9 @@ class EditorTab(AbstractTab):
 				self.render_scratch_ui(name)
 		return f
 
-	@abstractmethod
 	def render_all_scratch_ui(self):
-		pass
+		for key in self.string_attrs:
+			self.render_scratch_ui(key)
 
 	@abstractmethod
 	def render_scratch_ui(self, name: str):
