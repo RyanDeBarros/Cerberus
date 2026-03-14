@@ -209,7 +209,12 @@ class MainWindow(QMainWindow):
 
 	def closeEvent(self, event):
 		for _ in range(self.ui.tabWidget.count()):
-			self.get_tab(0).on_app_close()  # TODO(1) user setting to switch between on_app_close() and regular on_close() on app close. In the latter case, will still need to cache opened tabs, just with the popup on unsaved edits.
+			if self.user_preferences_tab.data().silently_cache_on_close:
+				self.get_tab(0).on_app_close()
+			else:
+				self.get_tab(0).on_close()
+				self.get_tab(0).set_asterisk(False)
+				self.get_tab(0).on_app_close()
 			self.ui.tabWidget.removeTab(0)
 
 		self.watcher_worker.stop()
