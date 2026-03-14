@@ -40,6 +40,10 @@ class UserPreferencesTab(EditorTab):
 		return self.scratch_preferences
 
 	@override
+	def revert_buttons(self):
+		return [self.revert_on_app_close_behaviour]
+
+	@override
 	def strings(self):
 		return STRINGS
 

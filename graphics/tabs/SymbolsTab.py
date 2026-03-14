@@ -51,6 +51,10 @@ class SymbolsTab(EditorTab):
 		return self.scratch_symbols
 
 	@override
+	def revert_buttons(self):
+		return [self.revert_sentence_enders, self.revert_non_title_words]
+
+	@override
 	def strings(self):
 		return STRINGS
 

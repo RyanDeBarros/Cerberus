@@ -30,7 +30,9 @@ class EditorTab(AbstractTab):
 	def load(self):
 		self.storage.load()
 		self.storage.dump_to(self.scratch_data())
-		self.render_all_scratch_ui()  # TODO(1) also call value_changed() on all revert buttons
+		self.render_all_scratch_ui()
+		for revert_button in self.revert_buttons():
+			revert_button.value_changed()
 
 	def dump(self):
 		self.storage.load_from(self.scratch_data())
@@ -62,6 +64,10 @@ class EditorTab(AbstractTab):
 
 	@abstractmethod
 	def scratch_data(self):
+		raise NotImplementedError()
+
+	@abstractmethod
+	def revert_buttons(self) -> list[RevertButton]:
 		raise NotImplementedError()
 
 	@abstractmethod
